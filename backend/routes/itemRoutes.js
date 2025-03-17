@@ -2,7 +2,6 @@ const express = require("express");
 const CartItem = require("../models/CartItem");
 const router = express.Router();
 
-// Add an item to the cart
 router.post("/add", async (req, res) => {
   try {
     const { productId, name, price, weight, expiryDate } = req.body;
@@ -15,7 +14,6 @@ router.post("/add", async (req, res) => {
   }
 });
 
-// Remove an item from the cart
 router.delete("/remove/:id", async (req, res) => {
   try {
     await CartItem.findByIdAndDelete(req.params.id);
@@ -25,7 +23,6 @@ router.delete("/remove/:id", async (req, res) => {
   }
 });
 
-// Get all items in the cart
 router.get("/", async (req, res) => {
   try {
     const items = await CartItem.find();
