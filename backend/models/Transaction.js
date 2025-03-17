@@ -7,10 +7,12 @@ const TransactionSchema = new mongoose.Schema({
       productId: { type: String, required: true },
       name: { type: String, required: true },
       price: { type: Number, required: true },
-      quantity: { type: Number, required: true },
-    }
+      weight: { type: Number, required: true }, 
+      expiryDate: { type: Date },
+      quantity: { type: Number, default: 1 },
+    },
   ],
-  totalAmount: { type: Number, required: true },
+  totalPrice: { type: Number, required: true },
   totalWeight: { type: Number, required: true }, // Total weight of all items
   paymentStatus: { type: String, enum: ["Pending", "Completed", "Failed"], default: "Pending" },
   paymentMethod: { type: String, enum: ["Card", "UPI", "Cash"], required: true },
