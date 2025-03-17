@@ -36,8 +36,8 @@ server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 
 
-const cartRoutes = require("./routes/cartRoutes");
-app.use("/api/cart", cartRoutes);
+const userRoutes = require("./routes/userRoutes");
+app.use("/api/cart", userRoutes);
 
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
