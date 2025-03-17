@@ -47,3 +47,7 @@ io.on("connection", (socket) => {
     io.emit("updateCart", items);
   });
 });
+
+const transactionRoutes = require("./routes/transactionRoutes");
+app.use("/api/transactions", transactionRoutes);
+
