@@ -54,3 +54,5 @@ app.use("/api/transactions", transactionRoutes);
 const cartRoutes = require("./routes/cartRoutes"); 
 app.use("/api/cart", cartRoutes); 
 
+const itemRoutes = require("./routes/itemRoutes");
+app.use("/api/item", itemRoutes);
