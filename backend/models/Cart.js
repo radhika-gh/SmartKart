@@ -1,19 +1,19 @@
 const mongoose = require("mongoose");
 
 const CartSchema = new mongoose.Schema({
-  sessionId: { type: String, required: true, unique: true }, // Unique cart identifier (QR Code)
+  cartId: { type: String, required: true, unique: true }, 
   items: [
     {
       productId: { type: String, required: true },
       name: { type: String, required: true },
       price: { type: Number, required: true },
-      weight: { type: Number },
+      weight: { type: Number, required: true }, 
       expiryDate: { type: Date },
       quantity: { type: Number, default: 1 },
     },
   ],
   totalPrice: { type: Number, default: 0 },
-  createdAt: { type: Date, default: Date.now },
+  totalWeight: { type: Number, default: 0 }, 
 });
 
 module.exports = mongoose.model("Cart", CartSchema);
