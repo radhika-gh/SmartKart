@@ -51,3 +51,6 @@ io.on("connection", (socket) => {
 const transactionRoutes = require("./routes/transactionRoutes");
 app.use("/api/transactions", transactionRoutes);
 
+const cartRoutes = require("./routes/cartRoutes"); 
+app.use("/api/cart", cartRoutes); 
+
