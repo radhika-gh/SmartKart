@@ -30,6 +30,7 @@ router.post("/checkout", async (req, res) => {
     cart.items = [];
     cart.totalPrice = 0;
     cart.totalWeight = 0;
+    cart.active =false;
     await cart.save();
 
     res.status(201).json({ message: "Transaction completed, cart reset", newTransaction });
