@@ -26,7 +26,7 @@ router.post("/claim", async (req, res) => {
 /** ✅ Add an Item to the Cart (Only if Active) **/
 router.post("/add", async (req, res) => {
   try {
-    const { cartId, productId, name, price, weight, expiryDate } = req.body;
+    const { cartId, productId} = req.body;
 
     let cart = await Cart.findOne({ cartId });
 
@@ -37,6 +37,9 @@ router.post("/add", async (req, res) => {
         .status(400)
         .json({ error: "🚫 Cart is inactive. Please claim it first." });
 
+    const product = await Item.findOne({ productId });
+    if (!product) return res.status(404).json({ error: "❌ Product not found" });
+
     const existingItem = cart.items.find(
       (item) => item.productId === productId
     );
@@ -45,11 +48,11 @@ router.post("/add", async (req, res) => {
       existingItem.quantity += 1;
     } else {
       cart.items.push({
-        productId,
-        name,
-        price,
-        weight,
-        expiryDate,
+        productId: product.productId,
+        name: product.name,
+        price: product.price,
+        weight: product.weight,
+        expiryDate: product.expiryDate,
         quantity: 1,
       });
     }
@@ -123,28 +126,5 @@ router.get("/:cartId", async (req, res) => {
   }
 });
 
-/** ✅ Checkout & Reset the Cart **/
-router.post("/checkout", async (req, res) => {
-  try {
-    const { cartId } = req.body;
-
-    let cart = await Cart.findOne({ cartId });
-
-    if (!cart) return res.status(404).json({ error: "❌ Cart not found" });
-
-    cart.items = [];
-    cart.totalPrice = 0;
-    cart.totalWeight = 0;
-    cart.active = false; // ✅ Reset to inactive
-
-    await cart.save();
-
-    res
-      .status(200)
-      .json({ message: "✅ Checkout successful. Cart reset.", cart });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
 module.exports = router;
