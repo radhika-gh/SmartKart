@@ -3,7 +3,7 @@ import time
 import random
 
 # Backend URL (Replace with actual IP if needed)
-BACKEND_URL = "http://localhost:5000"
+BACKEND_URL = "http://localhost:8001"
 
 # Create a WebSocket client
 sio = socketio.Client()
@@ -13,8 +13,8 @@ def connect():
     print("Connected to backend as Fake Raspberry Pi")
 
 def send_rfid_scan():
-    cart_id = "cart123"  # Simulating a fixed cart
-    product_id = random.choice(["RFID_001", "RFID_002", "RFID_003"])  # Simulate scanning different products
+    cart_id = "5678"  # Simulating a fixed cart
+    product_id = random.choice(["1234"])  # Simulate scanning different products
     print(f"Sending RFID Scan: {product_id}")
 
     sio.emit("rfid_scan", {"cartId": cart_id, "productId": product_id})
