@@ -1,5 +1,4 @@
 import socketio
-import time
 import random
 
 # Backend URL (Replace with actual IP if needed)
@@ -12,16 +11,20 @@ sio = socketio.Client()
 def connect():
     print("Connected to backend as Fake Raspberry Pi")
 
+@sio.event
+def disconnect():
+    print("Disconnected from backend")
+
 def send_rfid_scan():
-    cart_id = "5678"  # Simulating a fixed cart
-    product_id = random.choice(["1234"])  # Simulate scanning different products
+    cart_id = "1001"  # Simulating a fixed cart
+    product_id = random.choice(["1234", "xyz", "pqr"])  # Simulate scanning a random product
     print(f"Sending RFID Scan: {product_id}")
 
     sio.emit("rfid_scan", {"cartId": cart_id, "productId": product_id})
 
-sio.connect(BACKEND_URL)
+    # ✅ Close connection after sending the data
+    sio.disconnect()
 
-# Simulate scanning RFID every 3 seconds
-while True:
-    send_rfid_scan()
-    time.sleep(3)
+# Connect to the backend and send the scan once
+sio.connect(BACKEND_URL)
+send_rfid_scan()
