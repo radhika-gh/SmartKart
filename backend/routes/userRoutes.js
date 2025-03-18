@@ -25,6 +25,40 @@ router.post("/claim", async (req, res) => {
   }
 });
 
+
+//scan cart
+/** ✅ Decide Whether to Add or Remove an Item **/
+router.post("/scan", async (req, res) => {
+  try {
+    const { cartId, productId, weight } = req.body;
+    console.log(`Scanning item: ${productId}, Weight: ${weight}`);
+
+    let cart = await Cart.findOne({ cartId });
+
+    if (!cart) return res.status(404).json({ error: "❌ Cart not found" });
+
+    if (!cart.active)
+      return res.status(400).json({ error: "🚫 Cart is inactive. Please claim it first." });
+
+    const existingItem = cart.items.find(item => item.productId === productId);
+
+    if (existingItem) {
+      console.log("🛑 Item already exists in cart, shifting control to REMOVE function...");
+      
+      // Manually call the remove function
+      return router.handle({ ...req, url: "/remove", method: "DELETE" }, res);
+    } else {
+      console.log("✅ Item is new, shifting control to ADD function...");
+      
+      // Manually call the add function
+      return router.handle({ ...req, url: "/add", method: "POST" }, res);
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 /** ✅ Add an Item to the Cart (Only if Active) **/
 router.post("/add", async (req, res) => {
 
