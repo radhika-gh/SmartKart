@@ -1,6 +1,6 @@
 import socketio
 
-BACKEND_URL = "http://localhost:5000"
+BACKEND_URL = "http://localhost:8001"
 sio = socketio.Client()
 
 sio.connect(BACKEND_URL)
