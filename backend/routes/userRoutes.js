@@ -2,6 +2,7 @@ const express = require("express");
 const Cart = require("../models/Cart");
 const Item = require("../models/CartItem");
 const router = express.Router();
+const axios = require("axios"); 
 
 /** ✅ Claim the Cart (Activate if Inactive) **/
 router.post("/claim", async (req, res) => {
@@ -47,6 +48,10 @@ router.post("/add", async (req, res) => {
     const existingItem = cart.items.find(
       (item) => item.productId === productId
     );
+    if (existingItem) {
+      const response = await axios.post("http://localhost:8001/api/shop/remove", data);
+      console.log("API Response:", response.data);
+    }
     if (Math.abs(weight - expectedWeight) > 0.05) {
       return res
         .status(400)
@@ -54,9 +59,7 @@ router.post("/add", async (req, res) => {
           error: `⚠️ Weight mismatch! Expected: ${expectedWeight} kg, Received: ${weight} kg`,
         });
     }
-    if (existingItem) {
-      existingItem.quantity += 1;
-    } else {
+    
       cart.items.push({
         productId: product.productId,
         name: product.name,
@@ -72,7 +75,7 @@ router.post("/add", async (req, res) => {
     await cart.save();
 
     res.status(201).json({ message: "✅ Item added to cart", cart });
-  }}
+  }
    catch (err) {
     res.status(500).json({ error: err.message });
   }
