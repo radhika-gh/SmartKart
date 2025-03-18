@@ -29,7 +29,7 @@ router.post("/add", async (req, res) => {
 
   try {
     const { cartId, productId, weight } = req.body;
-console.log(`weight is`${weight});
+console.log(`weight is ${weight}`);
     let cart = await Cart.findOne({ cartId });
 
     if (!cart) return res.status(404).json({ error: "❌ Cart not found" });
@@ -43,9 +43,7 @@ console.log(`weight is`${weight});
     if (!product)
       return res.status(404).json({ error: "❌ Product not found" });
 
-    const expectedWeight =
-      cart.items.reduce((sum, item) => sum + item.weight * item.quantity, 0) +
-      product.weight;
+    const expectedWeight =cart.totalWeight+ item.weight;
     const existingItem = cart.items.find(
       (item) => item.productId === productId
     );
