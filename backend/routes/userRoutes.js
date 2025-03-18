@@ -29,7 +29,7 @@ router.post("/add", async (req, res) => {
 
   try {
     const { cartId, productId, weight } = req.body;
-console.log(`weight is ${weight}`);
+    console.log(`weight is ${weight}`);
     let cart = await Cart.findOne({ cartId });
 
     if (!cart) return res.status(404).json({ error: "❌ Cart not found" });
@@ -43,7 +43,7 @@ console.log(`weight is ${weight}`);
     if (!product)
       return res.status(404).json({ error: "❌ Product not found" });
 
-    const expectedWeight =cart.totalWeight+ item.weight;
+    const expectedWeight =cart.totalWeight+ product.weight;
     const existingItem = cart.items.find(
       (item) => item.productId === productId
     );
@@ -54,7 +54,6 @@ console.log(`weight is ${weight}`);
           error: `⚠️ Weight mismatch! Expected: ${expectedWeight} kg, Received: ${weight} kg`,
         });
     }
-    cart.totalWeight = expectedWeight; // Corrected weight update
     if (existingItem) {
       existingItem.quantity += 1;
     } else {
@@ -66,23 +65,19 @@ console.log(`weight is ${weight}`);
         expiryDate: product.expiryDate,
         quantity: 1,
       });
-    }
 
     // ✅ Update total price & total weight
     cart.totalPrice = cart.items.reduce((sum, item) => sum + item.price, 0);
     cart.totalWeight = weight;
-    //cart.totalWeight = cart.items.reduce(
-    // (sum, item) => sum + item.weight * item.quantity,
-    //  0
-    //);
-
     await cart.save();
 
     res.status(201).json({ message: "✅ Item added to cart", cart });
-  } catch (err) {
+  }}
+   catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 /** ✅ Remove an Item from the Cart **/
 router.delete("/remove", async (req, res) => {
