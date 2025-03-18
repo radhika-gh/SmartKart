@@ -32,8 +32,7 @@ server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 
 
-const userRoutes = require("./routes/userRoutes");
-app.use("/api/shop", userRoutes);
+
 
 io.on("connection", (socket) => {
   console.log("Microcontroller Connected:", socket.id);
@@ -65,3 +64,5 @@ app.use("/api/cart", cartRoutes);
 
 const itemRoutes = require("./routes/itemRoutes");
 app.use("/api/item", itemRoutes);
+const userRoutes = require("./routes/userRoutes");
+app.use("/api/shop", userRoutes);

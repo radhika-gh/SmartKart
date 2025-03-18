@@ -1,5 +1,6 @@
 const express = require("express");
 const Cart = require("../models/Cart");
+const Item = require("../models/CartItem");
 const router = express.Router();
 
 /** ✅ Claim a Cart (Activate if Inactive) **/
