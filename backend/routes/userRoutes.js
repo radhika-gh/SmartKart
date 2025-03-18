@@ -93,7 +93,7 @@ router.delete("/remove", async (req, res) => {
     if (!cart) return res.status(404).json({ error: "❌ Cart not found" });
     const existingItem = cart.items.find((item) => item.productId === productId);
     if (!existingItem) return res.status(404).json({ error: "❌ Item not found in cart" });
-    const expectedWeight = cart.items.reduce((sum, item) => sum + (item.weight * item.quantity), 0) - existingItem.weight;
+    const expectedWeight = cart.totalWeight - existingItem.weight;
     if (Math.abs(weight - expectedWeight) > 0.05) {
       return res.status(400).json({
         error: `⚠️ Total weight mismatch! Expected: ${expectedWeight} kg, Received: ${weight} kg`,
