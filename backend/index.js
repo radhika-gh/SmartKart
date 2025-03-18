@@ -42,7 +42,7 @@ io.on("connection", (socket) => {
 
     try {
       // Send the scanned product to the existing API route
-      const response = await axios.post("http://localhost:8001/api/shop/add", data);
+      const response = await axios.post("http://localhost:8001/api/shop/scan", data);
 
       console.log("API Response:", response.data);
 

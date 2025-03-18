@@ -21,6 +21,6 @@ def get_weight():
     if REAL_HARDWARE:
         weight = hx.get_weight(5)  # Read average of 5 samples
     else:
-        weight =  0.495 # Generate fake weight for simulation
+        weight =  0.455 # Generate fake weight for simulation
     
     return weight

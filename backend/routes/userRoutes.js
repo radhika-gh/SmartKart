@@ -34,7 +34,9 @@ router.post("/scan", async (req, res) => {
     console.log(`Scanning item: ${productId}, Weight: ${weight}`);
 
     let cart = await Cart.findOne({ cartId });
-
+    const product = await Item.findOne({ productId });
+    if (!product)
+      return res.status(404).json({ error: "❌ Product not found" });
     if (!cart) return res.status(404).json({ error: "❌ Cart not found" });
 
     if (!cart.active)
@@ -66,26 +68,12 @@ router.post("/add", async (req, res) => {
     const { cartId, productId, weight } = req.body;
     console.log(`weight is ${weight}`);
     let cart = await Cart.findOne({ cartId });
-
-    if (!cart) return res.status(404).json({ error: "❌ Cart not found" });
-
-    if (!cart.active)
-      return res
-        .status(400)
-        .json({ error: "🚫 Cart is inactive. Please claim it first." });
-
     const product = await Item.findOne({ productId });
-    if (!product)
-      return res.status(404).json({ error: "❌ Product not found" });
 
     const expectedWeight =cart.totalWeight+ product.weight;
     const existingItem = cart.items.find(
       (item) => item.productId === productId
     );
-    if (existingItem) {
-      const response = await axios.post("http://localhost:8001/api/shop/remove", data);
-      console.log("API Response:", response.data);
-    }
     if (Math.abs(weight - expectedWeight) > 0.05) {
       return res
         .status(400)
@@ -122,27 +110,20 @@ router.delete("/remove", async (req, res) => {
     const { cartId, productId, weight } = req.body;
 
     let cart = await Cart.findOne({ cartId });
-    if (!cart) return res.status(404).json({ error: "❌ Cart not found" });
     const existingItem = cart.items.find((item) => item.productId === productId);
-    if (!existingItem) return res.status(404).json({ error: "❌ Item not found in cart" });
     const expectedWeight = cart.totalWeight - existingItem.weight;
     if (Math.abs(weight - expectedWeight) > 0.05) {
       return res.status(400).json({
         error: `⚠️ Total weight mismatch! Expected: ${expectedWeight} kg, Received: ${weight} kg`,
       });
     }
-    cart.totalWeight = expectedWeight;
     cart.items = cart.items.filter((item) => item.productId !== productId);
     // ✅ Update total price & total weight
     cart.totalPrice = cart.items.reduce(
       (sum, item) => sum + item.price ,
       0
     );
-    cart.totalWeight = cart.items.reduce(
-      (sum, item) => sum + item.weight ,
-      0
-    );
-
+    cart.totalWeight = weight;
     await cart.save();
 
     res.status(200).json({ message: "✅ Item removed from cart", cart });
