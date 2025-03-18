@@ -26,9 +26,10 @@ router.post("/claim", async (req, res) => {
 
 /** ✅ Add an Item to the Cart (Only if Active) **/
 router.post("/add", async (req, res) => {
+
   try {
     const { cartId, productId, weight } = req.body;
-
+console.log(`weight is`${weight});
     let cart = await Cart.findOne({ cartId });
 
     if (!cart) return res.status(404).json({ error: "❌ Cart not found" });
