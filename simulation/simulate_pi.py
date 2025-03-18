@@ -12,8 +12,8 @@ def connect():
     print("Connected to backend as Fake Raspberry Pi")
 
 def send_rfid_scans():
-    cart_id = "5678"  # Simulating a fixed cart
-    products = ["1234", "xyz", "pqr"]  # List of products to scan once
+    cart_id = "testAdd"  # Simulating a fixed cart
+    products = ["1234"]  # List of products to scan once
 
     for product_id in products:
         print(f"Sending RFID Scan: {product_id}")
