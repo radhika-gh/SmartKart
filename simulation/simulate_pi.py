@@ -11,24 +11,18 @@ sio = socketio.Client()
 def connect():
     print("Connected to backend as Fake Raspberry Pi")
 
-def send_rfid_scans():
+def send_data():
     cart_id = "testAdd"  # Simulating a fixed cart
-    products = ["1234"]  # List of products to scan once
+    product_if= "1234" # List of products to scan once
+    weight = get_weight()
+    print(f"Sending RFID Scan: {product_id}")
+    sio.emit("rfid_scan", {"cartId": cart_id, "productId": product_id, "weight":weight})
+    time.sleep(3)  # Wait for 3 seconds before sending the next product
 
-    for product_id in products:
-        print(f"Sending RFID Scan: {product_id}")
-        sio.emit("rfid_scan", {"cartId": cart_id, "productId": product_id})
-        time.sleep(3)  # Wait for 3 seconds before sending the next product
-def send_weight_data():
-    cart_id = "5678"
-    weight = get_weight()  # Get real or simulated weight
-    print(f"Sending Weight Data: {weight} kg")
-    sio.emit("weight_update", {"cartId": cart_id, "weight": weight})
 sio.connect(BACKEND_URL)
 
 # Send each product once
-send_rfid_scans()
-send_weight_data()
+send_data()
 # Close the connection after all scans are sent
 print("All products scanned. Disconnecting.")
 sio.disconnect()
