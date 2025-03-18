@@ -34,6 +34,7 @@ server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 const userRoutes = require("./routes/userRoutes");
 app.use("/api/shop", userRoutes);
+
 io.on("connection", (socket) => {
   console.log("Microcontroller Connected:", socket.id);
 
