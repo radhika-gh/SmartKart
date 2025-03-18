@@ -27,7 +27,7 @@ router.post("/claim", async (req, res) => {
 /** ✅ Add an Item to the Cart (Only if Active) **/
 router.post("/add", async (req, res) => {
   try {
-    const { cartId, productId, weight} = req.body;
+    const { cartId, productId, weight } = req.body;
 
     let cart = await Cart.findOne({ cartId });
 
@@ -39,15 +39,23 @@ router.post("/add", async (req, res) => {
         .json({ error: "🚫 Cart is inactive. Please claim it first." });
 
     const product = await Item.findOne({ productId });
-    if (!product) return res.status(404).json({ error: "❌ Product not found" });
+    if (!product)
+      return res.status(404).json({ error: "❌ Product not found" });
 
-    const expectedTotalWeight = cart.totalWeight + product.weight;  
+    const expectedWeight =
+      cart.items.reduce((sum, item) => sum + item.weight * item.quantity, 0) +
+      product.weight;
     const existingItem = cart.items.find(
       (item) => item.productId === productId
     );
     if (Math.abs(weight - expectedWeight) > 0.05) {
-      return res.status(400).json({ error: `⚠️ Weight mismatch! Expected: ${expectedWeight} kg, Received: ${weight} kg` });
+      return res
+        .status(400)
+        .json({
+          error: `⚠️ Weight mismatch! Expected: ${expectedWeight} kg, Received: ${weight} kg`,
+        });
     }
+    cart.totalWeight = expectedWeight; // Corrected weight update
     if (existingItem) {
       existingItem.quantity += 1;
     } else {
@@ -62,13 +70,10 @@ router.post("/add", async (req, res) => {
     }
 
     // ✅ Update total price & total weight
-    cart.totalPrice = cart.items.reduce(
-      (sum, item) => sum + item.price ,
-      0
-    );
-    cart.totalWeight =weight;
+    cart.totalPrice = cart.items.reduce((sum, item) => sum + item.price, 0);
+    cart.totalWeight = weight;
     //cart.totalWeight = cart.items.reduce(
-     // (sum, item) => sum + item.weight * item.quantity,
+    // (sum, item) => sum + item.weight * item.quantity,
     //  0
     //);
 
@@ -89,12 +94,13 @@ router.delete("/remove", async (req, res) => {
     if (!cart) return res.status(404).json({ error: "❌ Cart not found" });
     const existingItem = cart.items.find((item) => item.productId === productId);
     if (!existingItem) return res.status(404).json({ error: "❌ Item not found in cart" });
-    const expectedTotalWeight = cart.totalWeight - existingItem.weight;
-    if (Math.abs(totalWeight - expectedTotalWeight) > 0.05) {
+    const expectedWeight = cart.items.reduce((sum, item) => sum + (item.weight * item.quantity), 0) - existingItem.weight;
+    if (Math.abs(weight - expectedWeight) > 0.05) {
       return res.status(400).json({
-        error: `⚠️ Total weight mismatch! Expected: ${expectedTotalWeight} kg, Received: ${totalWeight} kg`
+        error: `⚠️ Total weight mismatch! Expected: ${expectedWeight} kg, Received: ${weight} kg`,
       });
     }
+    cart.totalWeight = expectedWeight;
     cart.items = cart.items.filter((item) => item.productId !== productId);
     // ✅ Update total price & total weight
     cart.totalPrice = cart.items.reduce(
