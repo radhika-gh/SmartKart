@@ -3,7 +3,7 @@ const Cart = require("../models/Cart");
 const Item = require("../models/CartItem");
 const router = express.Router();
 
-/** ✅ Claim a Cart (Activate if Inactive) **/
+/** ✅ Claim the Cart (Activate if Inactive) **/
 router.post("/claim", async (req, res) => {
   try {
     const { cartId } = req.body;
