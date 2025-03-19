@@ -24,3 +24,5 @@ def get_weight():
         weight =  0.455 # Generate fake weight for simulation
     
     return weight
+
+#commit test
