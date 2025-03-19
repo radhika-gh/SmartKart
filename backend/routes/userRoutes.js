@@ -70,33 +70,48 @@ router.post("/add", async (req, res) => {
     let cart = await Cart.findOne({ cartId });
     const product = await Item.findOne({ productId });
 
-    const expectedWeight =cart.totalWeight+ product.weight;
+    const expectedWeight = cart.totalWeight + product.weight;
     const existingItem = cart.items.find(
       (item) => item.productId === productId
     );
     if (Math.abs(weight - expectedWeight) > 0.05) {
-      return res
-        .status(400)
-        .json({
-          error: `⚠️ Weight mismatch! Expected: ${expectedWeight} kg, Received: ${weight} kg`,
-        });
-    }
-    
-      cart.items.push({
-        productId: product.productId,
-        name: product.name,
-        price: product.price,
-        weight: product.weight,
-        expiryDate: product.expiryDate,
-        quantity: 1,
+      return res.status(400).json({
+        error: `⚠️ Weight mismatch! Expected: ${expectedWeight} kg, Received: ${weight} kg`,
       });
+    }
+
+    // ✅ Check if the item is expired
+    let alertMessage = null;
+    if (product.expiryDate) {
+      const expiryDate = new Date(product.expiryDate);
+      const today = new Date();
+
+      // Convert both dates to YYYY-MM-DD format for accurate comparison
+      const expiryDateString = expiryDate.toISOString().split("T")[0];
+      const todayString = today.toISOString().split("T")[0];
+
+      if (todayString > expiryDateString) {
+        alertMessage = `⚠️ Alert: The item "${product.name}" has expired!`;
+      }
+    }
+
+    cart.items.push({
+      productId: product.productId,
+      name: product.name,
+      price: product.price,
+      weight: product.weight,
+      expiryDate: product.expiryDate,
+      quantity: 1,
+    });
 
     // ✅ Update total price & total weight
     cart.totalPrice = cart.items.reduce((sum, item) => sum + item.price, 0);
     cart.totalWeight = weight;
     await cart.save();
 
-    res.status(201).json({ message: "✅ Item added to cart", cart });
+    res
+      .status(201)
+      .json({ message: "✅ Item added to cart", cart, alert: alertMessage });
   }
    catch (err) {
     res.status(500).json({ error: err.message });
