@@ -1,21 +1,18 @@
 import React, { useState } from "react";
-import axios from "../api/api";
+import "../styles/CartInput.css"
+
 
 const CartInput = ({ onCartSubmit }) => {
   const [cartId, setCartId] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (!cartId) return alert("Please enter a Cart ID!");
-
-    try {
-      const response = await axios.get(`/cart/${cartId}`);
-      console.log("Cart Data:", response.data);
-      onCartSubmit(response.data);
-    } catch (error) {
-      console.error("Error fetching cart:", error);
-      alert("Invalid Cart ID or Cart not found");
+    if (!cartId.trim()) {
+      alert("Please enter a valid Cart ID!");
+      return;
     }
+    onCartSubmit(cartId);
+    setCartId(""); // Clear input after submission
   };
 
   return (
