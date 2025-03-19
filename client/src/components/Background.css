@@ -14,9 +14,9 @@
   animation: moveImages 10s linear infinite;
 }
 
-.image1 { background-image: url("/client/public/images/image1.jpg"); top: 10%; left: 10%; }
-.image2 { background-image: url("/client/public/images/image2.jpg"); top: 40%; left: 50%; }
-.image3 { background-image: url("/client/public/images/image3.jpg"); top: 70%; left: 30%; }
+.image1 { background-image: url("/public/images/image1.jpg"); top: 10%; left: 10%; }
+.image2 { background-image: url("/public/images/image2.jpg"); top: 40%; left: 50%; }
+.image3 { background-image: url("/public/images/image3.jpg"); top: 70%; left: 30%; }
 
 @keyframes moveImages {
   0% { transform: translateY(0px); }
