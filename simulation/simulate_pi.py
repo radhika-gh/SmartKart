@@ -26,3 +26,4 @@ send_data()
 # Close the connection after all scans are sent
 print("All products scanned. Disconnecting.")
 sio.disconnect()
+#test for push
