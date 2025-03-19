@@ -1,0 +1,46 @@
+.cart-input-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: url("https://source.unsplash.com/1600x900/?grocery,store") center/cover no-repeat;
+}
+
+form {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 350px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 2px solid #4CAF50;
+  border-radius: 5px;
+  font-size: 16px;
+  outline: none;
+}
+
+input:focus {
+  border-color: #2E7D32;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background: #4CAF50;
+  color: white;
+  font-size: 18px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+button:hover {
+  background: #2E7D32;
+}
