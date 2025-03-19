@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import io from "socket.io-client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom"; // ✅ Import useParams
 
 const BACKEND_URL = "http://localhost:8001";
 const socket = io(BACKEND_URL);
 
-const CartPage = ({ cartId }) => {
+const CartPage = () => {
+  const { cartId } = useParams(); // ✅ Extract cartId from URL
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // ✅ Used for navigation to Payment Page
+  const navigate = useNavigate();
 
   // ✅ Fetch cart details when the page loads
   useEffect(() => {
