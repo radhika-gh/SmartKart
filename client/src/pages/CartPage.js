@@ -94,6 +94,9 @@ const CartPage = () => {
                       }}
                     />
                     <span>{item.name}</span>
+                    {isExpired && (
+                      <span className="expired-tag"> (Expired)</span>
+                    )}
                   </td>
                   <td>{item.quantity}</td>
                   <td>₹{item.price * item.quantity}</td>
