@@ -1,0 +1,109 @@
+/* cart.css */
+.cart-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 30px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+  }
+  
+  .cart-items {
+    width: 65%;
+    background: white;
+    padding: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+  }
+  
+  .cart-items h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .cart-items h2 {
+    font-size: 18px;
+    color: #777;
+    margin-bottom: 20px;
+  }
+  
+  .cart-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .cart-table th,
+  .cart-table td {
+    padding: 10px;
+    vertical-align: middle; /* ✅ Ensures images align correctly */
+    text-align: center;
+}
+
+  
+  .cart-table th {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .product-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .product-image {
+    width: 80px; /* Adjust size if needed */
+    height: 80px;
+    border-radius: 8px;
+    object-fit: contain; /* ✅ Ensures full image is visible without cropping */
+    border: 1px solid #ddd;
+    padding: 5px;
+    background-color: white; /* Helps in case of transparent images */
+}
+
+  
+  /* Cart Summary Section */
+  .cart-summary {
+    width: 30%;
+    background: white;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+  }
+  
+  .cart-summary h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .cart-summary p {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 20px;
+  }
+  
+  /* Checkout Button */
+  .checkout-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    background-color: #28a745;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .checkout-btn:hover {
+    background-color: #218838;
+  }
+  
+  /* Disabled Button */
+  .checkout-btn.disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+  }
+  

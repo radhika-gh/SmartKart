@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import io from "socket.io-client";
-import { useNavigate, useParams } from "react-router-dom"; // ✅ Import useParams
+import { useNavigate, useParams } from "react-router-dom";
+import "../styles/cart.css"; // ✅ Importing the new stylish CSS
 
 const BACKEND_URL = "http://localhost:8001";
 const socket = io(BACKEND_URL);
 
 const CartPage = () => {
-  const { cartId } = useParams(); // ✅ Extract cartId from URL
+  const { cartId } = useParams();
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -24,20 +25,26 @@ const CartPage = () => {
         setLoading(false);
       }
     };
-
+  
     fetchCart();
-
+  
     // ✅ Listen for real-time cart updates
     socket.on("updateCart", (updatedCart) => {
       if (updatedCart.cartId === cartId) {
         setCart(updatedCart);
       }
     });
-
+  
     return () => {
       socket.off("updateCart"); // Cleanup listener
     };
   }, [cartId]);
+  
+  // ✅ Move console.log(cart) here, so it logs after the state updates
+  useEffect(() => {
+    console.log("🚀 Updated Cart Data:", cart);
+  }, [cart]);
+  
 
   // ✅ Handle Checkout (Navigate to Payment Page)
   const handleCheckout = () => {
@@ -48,40 +55,56 @@ const CartPage = () => {
   if (!cart) return <p>No cart found.</p>;
 
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", padding: "20px" }}>
-      {/* 🛒 Cart Items Section */}
-      <div style={{ width: "60%" }}>
+    <div className="cart-container">
+      <div className="cart-items">
         <h1>Shopping Cart</h1>
         <h2>Cart ID: {cart.cartId}</h2>
 
-        <table border="1" width="100%">
+        <table className="cart-table">
           <thead>
             <tr>
-              <th>Item</th>
+              <th>Product</th>
               <th>Quantity</th>
               <th>Price</th>
-              <th>Weight</th>
             </tr>
           </thead>
           <tbody>
-            {cart.items.map((item) => (
-              <tr key={item.productId}>
-                <td>{item.name}</td>
-                <td>{item.quantity}</td>
-                <td>₹{item.price * item.quantity}</td>
-                <td>{item.weight * item.quantity} kg</td>
-              </tr>
-            ))}
-          </tbody>
+  {cart.items.map((item) => {
+    console.log("🖼️ Image URL:", item.image); // ✅ Log image URL before rendering
+
+    return (
+      <tr key={item.productId}>
+        <td className="product-info">
+        <img 
+  src={item.image} 
+  alt={item.name} 
+  className="product-image"
+  style={{ width: "auto", maxWidth: "100px", height: "auto", maxHeight: "100px", objectFit: "contain" }}
+  onError={(e) => { e.target.src = "https://via.placeholder.com/100"; }} 
+/>
+
+
+          <span>{item.name}</span>
+        </td>
+        <td>{item.quantity}</td>
+        <td>₹{item.price * item.quantity}</td>
+      </tr>
+    );
+  })}
+</tbody>
+
         </table>
       </div>
 
       {/* 💰 Total Bill & Checkout Section */}
-      <div style={{ width: "30%", border: "1px solid #ddd", padding: "15px", textAlign: "center" }}>
+      <div className="cart-summary">
         <h2>Total Bill</h2>
         <p><strong>Price:</strong> ₹{cart.totalPrice}</p>
-        <p><strong>Weight:</strong> {cart.totalWeight} kg</p>
-        <button onClick={handleCheckout} style={{ padding: "10px", fontSize: "16px", cursor: "pointer" }}>
+        <button 
+          onClick={handleCheckout}  
+          disabled={cart.items.length === 0}
+          className={`checkout-btn ${cart.items.length === 0 ? "disabled" : ""}`}
+        >
           Buy Now
         </button>
       </div>

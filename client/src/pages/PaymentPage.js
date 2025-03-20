@@ -52,7 +52,6 @@ const PaymentPage = () => {
       <h1>Payment</h1>
       <h2>Cart ID: {cart.cartId}</h2>
       <p><strong>Total Price:</strong> ₹{cart.totalPrice}</p>
-      <p><strong>Total Weight:</strong> {cart.totalWeight} kg</p>
 
       <div className="payment-method">
         <label>Select Payment Method:</label>

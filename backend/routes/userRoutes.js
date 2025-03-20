@@ -63,57 +63,50 @@ router.post("/scan", async (req, res) => {
 
 /** ✅ Add an Item to the Cart (Only if Active) **/
 router.post("/add", async (req, res) => {
-
   try {
     const { cartId, productId, weight } = req.body;
-    console.log(`weight is ${weight}`);
+    console.log(`🛒 Adding item: ${productId}, Weight: ${weight}`);
+
     let cart = await Cart.findOne({ cartId });
     const product = await Item.findOne({ productId });
 
+    if (!product) {
+      console.log("❌ Product not found in Item collection!");
+      return res.status(404).json({ error: "❌ Product not found" });
+    }
+
+    console.log("📸 Image URL from DB:", product.image); // ✅ Log image URL before adding to cart
+
     const expectedWeight = cart.totalWeight + product.weight;
-    const existingItem = cart.items.find(
-      (item) => item.productId === productId
-    );
     if (Math.abs(weight - expectedWeight) > 0.05) {
       return res.status(400).json({
         error: `⚠️ Weight mismatch! Expected: ${expectedWeight} kg, Received: ${weight} kg`,
       });
     }
 
-    // ✅ Check if the item is expired
-    let alertMessage = null;
-    if (product.expiryDate) {
-      const expiryDate = new Date(product.expiryDate);
-      const today = new Date();
+    const existingItem = cart.items.find(item => item.productId === productId);
 
-      // Convert both dates to YYYY-MM-DD format for accurate comparison
-      const expiryDateString = expiryDate.toISOString().split("T")[0];
-      const todayString = today.toISOString().split("T")[0];
-
-      if (todayString > expiryDateString) {
-        alertMessage = `⚠️ Alert: The item "${product.name}" has expired!`;
-      }
+    if (existingItem) {
+      existingItem.quantity += 1; // ✅ Increment quantity if item exists
+    } else {
+      cart.items.push({
+        productId: product.productId,
+        name: product.name,
+        price: product.price,
+        weight: product.weight,
+        expiryDate: product.expiryDate,
+        quantity: 1,
+        image: product.image || "https://via.placeholder.com/150",  
+      });
     }
 
-    cart.items.push({
-      productId: product.productId,
-      name: product.name,
-      price: product.price,
-      weight: product.weight,
-      expiryDate: product.expiryDate,
-      quantity: 1,
-    });
-
-    // ✅ Update total price & total weight
-    cart.totalPrice = cart.items.reduce((sum, item) => sum + item.price, 0);
+    cart.totalPrice = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
     cart.totalWeight = weight;
+    
     await cart.save();
 
-    res
-      .status(201)
-      .json({ message: "✅ Item added to cart", cart, alert: alertMessage });
-  }
-   catch (err) {
+    res.status(201).json({ message: "✅ Item added to cart", cart });
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
@@ -150,7 +143,8 @@ router.delete("/remove", async (req, res) => {
 /** ✅ Get Cart Details **/
 router.get("/:cartId", async (req, res) => {
   try {
-    const cart = await Cart.findOne({ cartId: req.params.cartId });
+    const cart = await Cart.findOne({ cartId: req.params.cartId })
+      .populate("items", "name price weight expiryDate quantity image");  // ✅ Ensure `image` is included
 
     if (!cart) return res.status(404).json({ error: "❌ Cart not found" });
 
@@ -159,6 +153,7 @@ router.get("/:cartId", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 
 module.exports = router;

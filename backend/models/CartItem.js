@@ -6,6 +6,7 @@ const CartItemSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   weight: { type: Number },
   expiryDate: { type: Date },
+  image: { type: String },
   addedAt: { type: Date, default: Date.now },
 });
 
