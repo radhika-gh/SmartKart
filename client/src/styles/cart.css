@@ -107,3 +107,12 @@
     cursor: not-allowed;
   }
   
+  /* Expired Item Row */
+.expired-row {
+    background-color: rgba(255, 0, 0, 0.1); /* Light red tint */
+    color: #b00020; /* Darker red text for emphasis */
+}
+
+.expired-row td {
+    border-bottom: 2px solid #b00020; /* Subtle red underline */
+}

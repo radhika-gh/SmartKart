@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import io from "socket.io-client";
 import { useNavigate, useParams } from "react-router-dom";
-import "../styles/cart.css"; // ✅ Importing the new stylish CSS
+import "../styles/cart.css"; // ✅ Importing the stylish CSS
 
 const BACKEND_URL = "http://localhost:8001";
 const socket = io(BACKEND_URL);
@@ -25,26 +25,24 @@ const CartPage = () => {
         setLoading(false);
       }
     };
-  
+
     fetchCart();
-  
+
     // ✅ Listen for real-time cart updates
     socket.on("updateCart", (updatedCart) => {
       if (updatedCart.cartId === cartId) {
         setCart(updatedCart);
       }
     });
-  
+
     return () => {
       socket.off("updateCart"); // Cleanup listener
     };
   }, [cartId]);
-  
-  // ✅ Move console.log(cart) here, so it logs after the state updates
+
   useEffect(() => {
     console.log("🚀 Updated Cart Data:", cart);
   }, [cart]);
-  
 
   // ✅ Handle Checkout (Navigate to Payment Page)
   const handleCheckout = () => {
@@ -69,41 +67,55 @@ const CartPage = () => {
             </tr>
           </thead>
           <tbody>
-  {cart.items.map((item) => {
-    console.log("🖼️ Image URL:", item.image); // ✅ Log image URL before rendering
+            {cart.items.map((item) => {
+              console.log("🖼️ Image URL:", item.image);
 
-    return (
-      <tr key={item.productId}>
-        <td className="product-info">
-        <img 
-  src={item.image} 
-  alt={item.name} 
-  className="product-image"
-  style={{ width: "auto", maxWidth: "100px", height: "auto", maxHeight: "100px", objectFit: "contain" }}
-  onError={(e) => { e.target.src = "https://via.placeholder.com/100"; }} 
-/>
+              const isExpired = new Date(item.expiryDate) < new Date();
 
-
-          <span>{item.name}</span>
-        </td>
-        <td>{item.quantity}</td>
-        <td>₹{item.price * item.quantity}</td>
-      </tr>
-    );
-  })}
-</tbody>
-
+              return (
+                <tr
+                  key={item.productId}
+                  className={isExpired ? "expired-row" : ""}
+                >
+                  <td className="product-info">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="product-image"
+                      style={{
+                        width: "auto",
+                        maxWidth: "100px",
+                        height: "auto",
+                        maxHeight: "100px",
+                        objectFit: "contain",
+                      }}
+                      onError={(e) => {
+                        e.target.src = "https://via.placeholder.com/100";
+                      }}
+                    />
+                    <span>{item.name}</span>
+                  </td>
+                  <td>{item.quantity}</td>
+                  <td>₹{item.price * item.quantity}</td>
+                </tr>
+              );
+            })}
+          </tbody>
         </table>
       </div>
 
       {/* 💰 Total Bill & Checkout Section */}
       <div className="cart-summary">
         <h2>Total Bill</h2>
-        <p><strong>Price:</strong> ₹{cart.totalPrice}</p>
-        <button 
-          onClick={handleCheckout}  
+        <p>
+          <strong>Price:</strong> ₹{cart.totalPrice}
+        </p>
+        <button
+          onClick={handleCheckout}
           disabled={cart.items.length === 0}
-          className={`checkout-btn ${cart.items.length === 0 ? "disabled" : ""}`}
+          className={`checkout-btn ${
+            cart.items.length === 0 ? "disabled" : ""
+          }`}
         >
           Buy Now
         </button>
