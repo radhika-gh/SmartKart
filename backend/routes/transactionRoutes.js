@@ -4,18 +4,22 @@ const Cart = require("../models/Cart");
 const router = express.Router();
 
 // Checkout and create a transaction
+// Process Payment
 router.post("/checkout", async (req, res) => {
   try {
     const { cartId, paymentMethod } = req.body;
 
-    // Find the cart based on cartId
+    // Find the cart
     const cart = await Cart.findOne({ cartId });
     if (!cart) {
-      return res.status(404).json({ message: "Cart not found" });
+      return res.status(404).json({ error: "Cart not found" });
     }
 
-    // Create a transaction from cart data
-    const newTransaction = new Transaction({
+    // Simulate payment processing (In real projects, integrate a payment gateway)
+    console.log(`Processing payment for Cart ID: ${cartId} with ${paymentMethod}`);
+
+    // Create a new transaction
+    const transaction = new Transaction({
       cartId: cart.cartId,
       items: cart.items,
       totalPrice: cart.totalPrice,
@@ -24,18 +28,19 @@ router.post("/checkout", async (req, res) => {
       paymentStatus: "Completed",
     });
 
-    await newTransaction.save();
+    await transaction.save();
 
-    // Reset the cart (remove all items and set total values to 0)
+    // Clear cart after successful payment
     cart.items = [];
     cart.totalPrice = 0;
     cart.totalWeight = 0;
-    cart.active =false;
+    cart.active = false;
     await cart.save();
 
-    res.status(201).json({ message: "Transaction completed, cart reset", newTransaction });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(200).json({ message: "Payment successful", transaction });
+  } catch (error) {
+    console.error("Payment Error:", error);
+    res.status(500).json({ error: "Payment processing failed." });
   }
 });
 

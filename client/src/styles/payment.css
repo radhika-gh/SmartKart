@@ -1,0 +1,29 @@
+.payment-container {
+    text-align: center;
+    padding: 20px;
+    background: #f5f5f5;
+    border-radius: 10px;
+    width: 50%;
+    margin: auto;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .payment-method {
+    margin: 15px 0;
+  }
+  
+  .pay-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #28a745;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .pay-button:disabled {
+    background-color: gray;
+    cursor: not-allowed;
+  }
+  
