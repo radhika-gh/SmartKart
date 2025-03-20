@@ -11,7 +11,7 @@ const PaymentPage = () => {
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("Card"); // Default payment method
+  const [paymentMethod, setPaymentMethod] = useState("Card");
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -30,13 +30,12 @@ const PaymentPage = () => {
   const handlePayment = async () => {
     setProcessing(true);
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/transactions/checkout`, {
+      await axios.post(`${BACKEND_URL}/api/transactions/checkout`, {
         cartId,
         paymentMethod,
       });
-
       alert("✅ Payment Successful!");
-      navigate("/"); // Redirect to Home Page
+      navigate("/");
     } catch (error) {
       console.error("Payment failed:", error);
       alert("❌ Payment failed. Try again!");
@@ -49,22 +48,24 @@ const PaymentPage = () => {
 
   return (
     <div className="payment-container">
-      <h1>Payment</h1>
-      <h2>Cart ID: {cart.cartId}</h2>
-      <p><strong>Total Price:</strong> ₹{cart.totalPrice}</p>
+      <div className="payment-box">
+        <h1>Complete Your Payment</h1>
+        <h2>Cart ID: {cart.cartId}</h2>
+        <p><strong>Total Price:</strong> ₹{cart.totalPrice}</p>
 
-      <div className="payment-method">
-        <label>Select Payment Method:</label>
-        <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
-          <option value="Card">Credit/Debit Card</option>
-          <option value="UPI">UPI</option>
-          <option value="Cash">Cash</option>
-        </select>
+        <div className="payment-method">
+          <label>Select Payment Method:</label>
+          <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
+            <option value="Card">💳 Credit/Debit Card</option>
+            <option value="UPI">📲 UPI</option>
+            <option value="Cash">💵 Cash</option>
+          </select>
+        </div>
+
+        <button className="pay-button" onClick={handlePayment} disabled={processing}>
+          {processing ? "Processing..." : "Pay Now"}
+        </button>
       </div>
-
-      <button className="pay-button" onClick={handlePayment} disabled={processing}>
-        {processing ? "Processing..." : "Pay Now"}
-      </button>
     </div>
   );
 };

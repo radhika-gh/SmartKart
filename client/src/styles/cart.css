@@ -1,115 +1,166 @@
-/* cart.css */
+/* ✨ SmartKart - Premium Cart Page Styles ✨ */
 .cart-container {
-    display: flex;
-    justify-content: space-between;
-    padding: 30px;
-    background-color: #f8f9fa;
-    min-height: 100vh;
-  }
-  
-  .cart-items {
-    width: 65%;
-    background: white;
-    padding: 20px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-  }
-  
-  .cart-items h1 {
-    font-size: 28px;
-    margin-bottom: 10px;
-    color: #333;
-  }
-  
-  .cart-items h2 {
-    font-size: 18px;
-    color: #777;
-    margin-bottom: 20px;
-  }
-  
-  .cart-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .cart-table th,
-  .cart-table td {
-    padding: 10px;
-    vertical-align: middle; /* ✅ Ensures images align correctly */
-    text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 60px 5%;
+  background: linear-gradient(to bottom, #f2f3ed, #e0e0e0);
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
 }
 
-  
-  .cart-table th {
-    background-color: #007bff;
-    color: white;
-  }
-  
-  .product-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
-  
-  .product-image {
-    width: 80px; /* Adjust size if needed */
-    height: 80px;
-    border-radius: 8px;
-    object-fit: contain; /* ✅ Ensures full image is visible without cropping */
-    border: 1px solid #ddd;
-    padding: 5px;
-    background-color: white; /* Helps in case of transparent images */
+/* 🛒 Shopping Cart Section */
+.cart-items {
+  width: 65%;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: 0.3s ease-in-out;
 }
 
-  
-  /* Cart Summary Section */
-  .cart-summary {
-    width: 30%;
-    background: white;
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-  }
-  
-  .cart-summary h2 {
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 10px;
-  }
-  
-  .cart-summary p {
-    font-size: 18px;
-    color: #555;
-    margin-bottom: 20px;
-  }
-  
-  /* Checkout Button */
-  .checkout-btn {
-    width: 100%;
-    padding: 12px;
-    font-size: 18px;
-    border: none;
-    border-radius: 8px;
-    background-color: #28a745;
-    color: white;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-  
-  .checkout-btn:hover {
-    background-color: #218838;
-  }
-  
-  /* Disabled Button */
-  .checkout-btn.disabled {
-    background-color: #aaa;
-    cursor: not-allowed;
-  }
-  
+.cart-items h1 {
+  font-size: 36px;
+  color: #3f613f;
+  margin-bottom: 15px;
+}
+
+.cart-items h2 {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* 📦 Product Table */
+.cart-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cart-table th,
+.cart-table td {
+  padding: 18px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.cart-table th {
+  background: #3f613f;
+  color: white;
+  font-size: 18px;
+  text-transform: uppercase;
+  padding: 16px;
+}
+
+/* 🖼️ Product Info */
+.product-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.product-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+  object-fit: contain;
+  border: 1px solid #ddd;
+  padding: 6px;
+  background-color: white;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.product-image:hover {
+  transform: scale(1.1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* 🔥 Expired Items */
+.expired-row {
+  background-color: rgba(255, 0, 0, 0.1);
+}
+
 .expired-tag {
   color: red;
   font-weight: bold;
   margin-left: 8px;
 }
 
+/* 💰 Sticky Cart Summary */
+.cart-summary {
+  width: 30%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  position: sticky;
+  top: 30px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.cart-summary:hover {
+  transform: scale(1.05);
+}
+
+.cart-summary h2 {
+  font-size: 28px;
+  color: #3f613f;
+  margin-bottom: 15px;
+}
+
+.cart-summary p {
+  font-size: 22px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* 🛍️ Checkout Button */
+.checkout-btn {
+  width: 100%;
+  padding: 18px;
+  font-size: 20px;
+  border: none;
+  border-radius: 12px;
+  background-color: #ffa300;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.checkout-btn:hover {
+  background-color: #e69100;
+  transform: scale(1.02);
+}
+
+.checkout-btn.disabled {
+  background-color: gray;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* 📱 Mobile Responsive */
+@media (max-width: 768px) {
+  .cart-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .cart-items {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .cart-summary {
+    width: 100%;
+  }
+
+  .product-image {
+    width: 80px;
+    height: 80px;
+  }
+}

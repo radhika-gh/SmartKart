@@ -13,7 +13,7 @@ def connect():
 
 def send_data():
     cart_id = "swayam"  # Simulating a fixed cart
-    product_id= "EXP" # List of products to scan once
+    product_id= "fer100" # List of products to scan once
     weight = get_weight()
     print(f"Sending RFID Scan: {product_id}")
     sio.emit("rfid_scan", {"cartId": cart_id, "productId": product_id, "weight":weight})
