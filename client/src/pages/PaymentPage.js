@@ -4,14 +4,19 @@ import axios from "axios";
 import "../styles/payment.css";
 
 const BACKEND_URL = "http://localhost:8001";
- 
+
 const PaymentPage = () => {
   const { cartId } = useParams();
   const navigate = useNavigate();
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("Razorpay"); // ✅ Fixing the missing state
+  const [paymentMethod, setPaymentMethod] = useState("Razorpay");
+  const [showCashModal, setShowCashModal] = useState(false);
+
+  // For the "payment completed" UI and countdown
+  const [cashPaymentCompleted, setCashPaymentCompleted] = useState(false);
+  const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -28,19 +33,53 @@ const PaymentPage = () => {
   }, [cartId]);
 
   const handlePayment = async () => {
+    if (paymentMethod === "Cash") {
+      setProcessing(true);
+      setShowCashModal(true);
+
+      // Start polling every 5 seconds to check for admin approval.
+      const pollInterval = setInterval(async () => {
+        try {
+          const response = await axios.get(`${BACKEND_URL}/api/shop/${cartId}`);
+          const updatedCart = response.data;
+
+          // If admin has verified cash (cart is inactive), show success + countdown
+          if (!updatedCart.active) {
+            clearInterval(pollInterval);
+            setCashPaymentCompleted(true);
+
+            // Start a 5-second countdown before redirect
+            let redirectInterval = setInterval(() => {
+              setCountdown((prev) => {
+                if (prev <= 1) {
+                  clearInterval(redirectInterval);
+                  setShowCashModal(false);
+                  navigate("/");
+                }
+                return prev - 1;
+              });
+            }, 1000);
+          }
+        } catch (err) {
+          console.error("Polling error:", err);
+        }
+      }, 5000);
+
+      return;
+    }
+
+    // Razorpay Payment Flow:
     try {
-      // ✅ Load Razorpay dynamically if not available
       if (!window.Razorpay) {
         alert("Razorpay SDK failed to load. Check your network connection.");
         return;
       }
-  
-      // ✅ Create order in backend
-      const { data } = await axios.post(`${BACKEND_URL}/api/transactions/create-order`, { cartId });
-  
-      // ✅ Razorpay options
+      const { data } = await axios.post(
+        `${BACKEND_URL}/api/transactions/create-order`,
+        { cartId }
+      );
       const options = {
-        key: process.env.REACT_APP_RAZORPAY_ID_KEY, // ✅ Use environment variable
+        key: process.env.REACT_APP_RAZORPAY_ID_KEY,
         amount: data.amount,
         currency: data.currency,
         name: "SmartKart",
@@ -55,9 +94,6 @@ const PaymentPage = () => {
               cartId,
               paymentMethod: "Razorpay",
             });
-            
-        
-  
             alert("✅ Payment Successful!");
             navigate("/");
           } catch (error) {
@@ -74,8 +110,6 @@ const PaymentPage = () => {
           color: "#28a745",
         },
       };
-  
-      // ✅ Open Razorpay Checkout
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (error) {
@@ -83,7 +117,6 @@ const PaymentPage = () => {
       alert("❌ Payment failed. Try again!");
     }
   };
-  
 
   if (loading) return <p>Loading payment details...</p>;
   if (!cart) return <p>Cart not found.</p>;
@@ -93,20 +126,52 @@ const PaymentPage = () => {
       <div className="payment-box">
         <h1>Complete Your Payment</h1>
         <h2>Cart ID: {cart.cartId}</h2>
-        <p><strong>Total Price:</strong> ₹{cart.totalPrice}</p>
+        <p>
+          <strong>Total Price:</strong> ₹{cart.totalPrice}
+        </p>
 
         <div className="payment-method">
           <label>Select Payment Method:</label>
-          <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
+          <select
+            value={paymentMethod}
+            onChange={(e) => setPaymentMethod(e.target.value)}
+          >
             <option value="Razorpay">💳 Razorpay</option>
             <option value="Cash">💵 Cash</option>
           </select>
         </div>
 
-        <button className="pay-button" onClick={handlePayment} disabled={processing}>
+        <button
+          className="pay-button"
+          onClick={handlePayment}
+          disabled={processing}
+        >
           {processing ? "Processing..." : "Pay Now"}
         </button>
       </div>
+
+      {showCashModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            {/* If cashPaymentCompleted is true, show success + countdown */}
+            {cashPaymentCompleted ? (
+              <>
+                <h2>Payment Completed!</h2>
+                <p>Redirecting in {countdown}...</p>
+              </>
+            ) : (
+              <>
+                <h2>Cash Payment Processing</h2>
+                <p>
+                  Please proceed to your nearest counter. Your cash payment is
+                  awaiting admin approval.
+                </p>
+                <div className="spinner"></div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
