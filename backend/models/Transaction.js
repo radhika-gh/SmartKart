@@ -15,7 +15,7 @@ const TransactionSchema = new mongoose.Schema({
   totalPrice: { type: Number, required: true },
   totalWeight: { type: Number, required: true }, // Total weight of all items
   paymentStatus: { type: String, enum: ["Pending", "Completed", "Failed"], default: "Pending" },
-  paymentMethod: { type: String, enum: ["Card", "UPI", "Cash"], required: true },
+  paymentMethod: { type: String, enum: ["Razorpay", "Cash"], required: true },
   timestamp: { type: Date, default: Date.now },
 });
 
