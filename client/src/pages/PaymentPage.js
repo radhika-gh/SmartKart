@@ -99,7 +99,6 @@ const PaymentPage = () => {
           <label>Select Payment Method:</label>
           <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
             <option value="Razorpay">💳 Razorpay</option>
-            <option value="UPI">📲 UPI</option>
             <option value="Cash">💵 Cash</option>
           </select>
         </div>
