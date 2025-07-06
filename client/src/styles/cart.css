@@ -101,8 +101,9 @@
   transition: transform 0.3s ease-in-out;
 }
 
+/* Disable scaling on hover to avoid layout jitter */
 .cart-summary:hover {
-  transform: scale(1.05);
+  transform: none;
 }
 
 .cart-summary h2 {
@@ -163,4 +164,126 @@
     width: 80px;
     height: 80px;
   }
+}
+
+/* 🛒 New Card-Style Cart Items */
+.cart-item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cart-item-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.cart-item-card.expired-row {
+  /* keep the red tint for expired items */
+  background-color: rgba(255, 0, 0, 0.1);
+}
+
+.item-image-wrapper {
+  flex: 0 0 80px;
+}
+
+.item-details {
+  flex: 1;
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.item-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.item-qty,
+.item-price {
+  font-size: 16px;
+  font-weight: 500;
+  color: #555;
+}
+
+.item-price {
+  min-width: 100px;
+  text-align: right;
+}
+
+/* 🔢 Order Summary rows */
+.summary-row,
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.summary-total {
+  font-weight: 700;
+  font-size: 22px;
+}
+
+/* 🔮 Recommendations */
+.recommendations-container {
+  margin-top: 40px;
+}
+
+.recommendations-container h2 {
+  font-size: 24px;
+  margin-bottom: 15px;
+  color: #3f613f;
+}
+
+.recommendations-list {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.recommendation-card {
+  flex: 0 0 160px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  padding: 15px;
+  text-align: center;
+}
+
+.recommendation-image {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  border-radius: 8px;
+  margin: 0 auto 10px;
+}
+
+.recommendation-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.recommendation-price {
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+}
+
+/* Allow smooth horizontal scrolling */
+.recommendations-list::-webkit-scrollbar {
+  height: 6px;
+}
+
+.recommendations-list::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
 }
