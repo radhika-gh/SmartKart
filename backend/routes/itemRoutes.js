@@ -11,7 +11,7 @@ const upload = multer({ storage });
 // ✅ Add an item with image upload
 router.post("/add", upload.single("image"), async (req, res) => {
   try {
-    const { productId, name, price, weight, expiryDate } = req.body;
+    const { productId, name, price, weight, expiryDate, tags } = req.body;
 
     let imageUrl = "";
 
@@ -34,6 +34,11 @@ router.post("/add", upload.single("image"), async (req, res) => {
             weight,
             expiryDate,
             image: imageUrl, // ✅ Save image URL in DB
+            tags: Array.isArray(tags)
+              ? tags
+              : typeof tags === "string" && tags.length
+              ? tags.split(/[, ]+/).filter(Boolean)
+              : [],
           });
 
           await newItem.save();
@@ -49,6 +54,11 @@ router.post("/add", upload.single("image"), async (req, res) => {
         weight,
         expiryDate,
         image: imageUrl,
+        tags: Array.isArray(tags)
+          ? tags
+          : typeof tags === "string" && tags.length
+          ? tags.split(/[, ]+/).filter(Boolean)
+          : [],
       });
 
       await newItem.save();

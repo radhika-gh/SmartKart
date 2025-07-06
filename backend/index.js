@@ -64,5 +64,10 @@ app.use("/api/cart", cartRoutes);
 
 const itemRoutes = require("./routes/itemRoutes");
 app.use("/api/item", itemRoutes);
+
+// 🔮 Recommendation routes
+const recommendationRoutes = require("./routes/recommendationRoutes");
+app.use("/api/recommendations", recommendationRoutes);
+
 const userRoutes = require("./routes/userRoutes");
 app.use("/api/shop", userRoutes);

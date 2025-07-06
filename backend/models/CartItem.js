@@ -7,6 +7,8 @@ const CartItemSchema = new mongoose.Schema({
   weight: { type: Number },
   expiryDate: { type: Date },
   image: { type: String },
+  // Optional list of descriptive tags for recommendation engine
+  tags: { type: [String], default: [] },
   addedAt: { type: Date, default: Date.now },
 });
 
