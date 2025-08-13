@@ -4,7 +4,7 @@ const router = express.Router();
 const Transaction = require("../models/Transaction");
 
 /** ✅ Add a New Cart (Admin Only) **/
-router.post("/admin/addCart", async (req, res) => {
+router.post("/addCart", async (req, res) => {
   try {
     const { cartId } = req.body;
 
@@ -30,7 +30,7 @@ router.post("/admin/addCart", async (req, res) => {
 });
 
 /** ✅ Remove a Cart (Admin Only) **/
-router.delete("/admin/removeCart", async (req, res) => {
+router.delete("/removeCart", async (req, res) => {
   try {
     const { cartId } = req.body;
 
@@ -47,7 +47,7 @@ router.delete("/admin/removeCart", async (req, res) => {
 });
 
 /** ✅ Get All Carts (Admin Only) **/
-router.get("/admin/getAllCarts", async (req, res) => {
+router.get("/getAllCarts", async (req, res) => {
   try {
     const carts = await Cart.find();
     res.status(200).json(carts);
@@ -57,7 +57,7 @@ router.get("/admin/getAllCarts", async (req, res) => {
 });
 
 /** ✅ Verify Cash Payment (Admin Only) **/
-router.post("/admin/verifyCash", async (req, res) => {
+router.post("/verifyCash", async (req, res) => {
   try {
     const { cartId } = req.body;
     const cart = await Cart.findOne({ cartId });
