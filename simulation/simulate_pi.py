@@ -12,7 +12,7 @@ def connect():
     print("Connected to backend as Fake Raspberry Pi")
 
 def send_data():
-    cart_id = "12456"  # Simulating a fixed cart
+    cart_id = "swayam12345"  # Simulating a fixed cart
     product_id= "EGG987" # List of products to scan once
     weight = get_weight()
     print(f"Sending RFID Scan: {product_id}")

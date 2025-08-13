@@ -287,3 +287,28 @@
   background: #ccc;
   border-radius: 3px;
 }
+
+/* Floating Checklist Toggle Button */
+.checklist-toggle-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  background-color: #3f613f; /* Using the page's theme color */
+  color: white;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15); /* Softer shadow */
+  cursor: pointer;
+  transition: transform 0.3s, background-color 0.3s;
+  z-index: 999;
+}
+
+.checklist-toggle-btn:hover {
+  transform: scale(1.1);
+  background-color: #2a402a; /* A darker shade for hover */
+}

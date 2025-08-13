@@ -1,0 +1,213 @@
+/* 📝 Diary-Style Shopping Checklist 📝 */
+
+/* The full-screen overlay that appears when the checklist is active */
+.checklist-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent backdrop */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.checklist-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* The main diary/page panel */
+.checklist-diary {
+  background-color: #fdfdf6; /* A soft, paper-like off-white */
+  width: 90%;
+  max-width: 800px;
+  height: 85vh;
+  border-radius: 15px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transform: scale(0.9);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.checklist-overlay.visible .checklist-diary {
+  transform: scale(1);
+}
+
+.checklist-header {
+  padding: 30px 40px;
+  border-bottom: 2px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.checklist-header h2 {
+  margin: 0;
+  font-family: 'Georgia', serif; /* A classic, elegant font */
+  font-size: 2.5rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 2.5rem;
+  color: #aaa;
+  cursor: pointer;
+  transition: color 0.3s, transform 0.3s;
+}
+
+.close-btn:hover {
+  color: #333;
+  transform: rotate(90deg);
+}
+
+.checklist-body {
+  flex-grow: 1;
+  padding: 20px 40px;
+  overflow-y: auto;
+}
+
+/* Custom scrollbar for the diary */
+.checklist-body::-webkit-scrollbar {
+  width: 8px;
+}
+.checklist-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+.checklist-body::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+.checklist-body::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+
+.add-item-container {
+  display: flex;
+  margin-bottom: 30px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 20px;
+}
+
+.add-item-input {
+  flex-grow: 1;
+  border: none;
+  background: transparent;
+  padding: 15px 0;
+  font-size: 1.2rem;
+  color: #555;
+  font-family: 'Poppins', sans-serif;
+}
+
+.add-item-input:focus {
+  outline: none;
+}
+
+.add-item-btn {
+  background: #3f613f; /* Matching the app's theme color */
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 2rem;
+  cursor: pointer;
+  margin-left: 15px;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.add-item-btn:hover {
+  background: #2a402a;
+  transform: scale(1.1);
+}
+
+.checklist-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.checklist-item {
+  display: flex;
+  align-items: center;
+  padding: 18px 0;
+  border-bottom: 1px solid #f0f0f0;
+  transition: opacity 0.3s;
+}
+
+.checklist-item:last-child {
+  border-bottom: none;
+}
+
+.checklist-item.checked {
+  opacity: 0.6;
+}
+
+.checklist-item.checked .item-name {
+  text-decoration: line-through;
+  color: #999;
+}
+
+.checkbox {
+  width: 28px;
+  height: 28px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  margin-right: 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s;
+}
+
+.checklist-item.checked .checkbox {
+  background-color: #3f613f;
+  border-color: #3f613f;
+}
+
+.checkmark {
+  color: white;
+  font-size: 1.2rem;
+}
+
+.item-name {
+  flex-grow: 1;
+  font-size: 1.2rem;
+  color: #444;
+  font-family: 'Poppins', sans-serif;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition: color 0.3s;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.checklist-item:hover .delete-btn {
+  opacity: 1;
+  visibility: visible;
+}
+
+.delete-btn:hover {
+  color: #e74c3c;
+}

@@ -3,6 +3,7 @@ import axios from "axios";
 import io from "socket.io-client";
 import { useNavigate, useParams } from "react-router-dom";
 import "../styles/cart.css"; // ✅ Importing the stylish CSS
+import ShoppingChecklist from "../components/ShoppingChecklist";
 
 const BACKEND_URL = "http://localhost:8001";
 const socket = io(BACKEND_URL);
@@ -12,10 +13,8 @@ const CartPage = () => {
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const [recommended, setRecommended] = useState([]);
+  const [isChecklistVisible, setChecklistVisible] = useState(false);
   const navigate = useNavigate();
-
-  // Ref to track last items signature to avoid unnecessary fetches
-  const lastItemsKeyRef = React.useRef("");
 
   // ✅ Fetch cart details when the page loads
   useEffect(() => {
@@ -96,6 +95,10 @@ const CartPage = () => {
   // ✅ Handle Checkout (Navigate to Payment Page)
   const handleCheckout = () => {
     navigate(`/payment/${cartId}`);
+  };
+
+  const toggleChecklist = () => {
+    setChecklistVisible(!isChecklistVisible);
   };
 
   if (loading) return <p>Loading cart...</p>;
@@ -184,6 +187,32 @@ const CartPage = () => {
           </div>
         )}
       </div>
+
+      {/* Floating Checklist Toggle Button */}
+      <button className="checklist-toggle-btn" onClick={toggleChecklist}>
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+      </button>
+
+      {/* Shopping Checklist Panel */}
+      <ShoppingChecklist
+        isVisible={isChecklistVisible}
+        onClose={toggleChecklist}
+      />
     </div>
   );
 };

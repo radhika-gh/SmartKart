@@ -20,81 +20,81 @@ const storeImages = [
 const popularProducts = [
   {
     id: 1,
-    name: "Blueberry Cheesecake",
+    name: "Hershey's Syrup",
     category: "DESSERTS",
-    price: 12.99,
-    originalPrice: 18.99,
-    discount: 29,
+    price: 190,
+    originalPrice: 205,
+    discount: 15,
     rating: 4.8,
     image: `${process.env.PUBLIC_URL}/images/pop1.jpg`
   },
   {
     id: 2,
-    name: "Premium Coffee Beans",
+    name: "Thumbs Up",
     category: "BEVERAGES",
-    price: 15.99,
-    originalPrice: 19.99,
-    discount: 19,
+    price: 18,
+    originalPrice: 20,
+    discount: 2,
     rating: 4.9,
     image: `${process.env.PUBLIC_URL}/images/pop2.jpg`
   },
   {
     id: 3,
-    name: "Artisan Whole Grain Bread",
+    name: "Aashirvaad Aata",
     category: "BAKERY",
-    price: 4.49,
-    originalPrice: 5.99,
-    discount: 22,
+    price: 249,
+    originalPrice: 279,
+    discount: 30,
     rating: 4.7,
     image: `${process.env.PUBLIC_URL}/images/pop3.jpg`
   },
   {
     id: 4,
-    name: "Fresh Garden Salad Mix",
-    category: "FRESH PRODUCE",
-    price: 8.99,
-    originalPrice: 11.99,
-    discount: 25,
+    name: "Surf Excel",
+    category: "CLOTHING",
+    price: 319,
+    originalPrice: 339,
+    discount: 20,
     rating: 4.6,
     image: `${process.env.PUBLIC_URL}/images/pop4.jpg`
   },
   {
     id: 5,
-    name: "Organic Whole Milk",
-    category: "DAIRY",
-    price: 3.99,
-    originalPrice: 5.49,
-    discount: 25,
+    name: "Parle-G",
+    category: "BAKERY",
+    price: 9,
+    originalPrice: 10,
+    discount: 1,
     rating: 4.8,
     image: `${process.env.PUBLIC_URL}/images/pop5.jpg`
   },
   {
     id: 6,
-    name: "Fresh Atlantic Salmon",
-    category: "SEAFOOD",
-    price: 24.99,
-    originalPrice: 31.99,
-    discount: 20,
+    name: "Scotch Brite",
+    category: "KITCHEN",
+    price: 68,
+    originalPrice: 70,
+    discount: 2,
     rating: 4.9,
     image: `${process.env.PUBLIC_URL}/images/pop6.jpg`
   },
   {
     id: 7,
-    name: "Tropical Fruit Tart",
-    category: "DESSERTS",
-    price: 14.99,
-    originalPrice: 19.99,
-    discount: 25,
+    name: "Colgate Toothpaste",
+    category: "HEALTH",
+    price: 90,
+    originalPrice: 100,
+    discount: 10,
     rating: 4.5,
     image: `${process.env.PUBLIC_URL}/images/pop7.jpg`
   },
   {
     id: 8,
-    name: "Gourmet Coffee Beans",
+    name: "Amul Milk",
     category: "BEVERAGES",
-    price: 18.99,
-    originalPrice: 24.99,
-    discount: 23,
+    price: 20,
+    originalPrice: 21,
+    discount: 1,
     rating: 4.7,
     image: `${process.env.PUBLIC_URL}/images/pop8.jpg`
   }
@@ -258,8 +258,8 @@ const HomePage = () => {
                             </div>
                             <h3 className="product-name">{product.name}</h3>
                             <div className="product-pricing">
-                              <span className="current-price">${product.price.toFixed(2)}</span>
-                              <span className="original-price">${product.originalPrice.toFixed(2)}</span>
+                              <span className="current-price">Rs.{product.price.toFixed(2)}</span>
+                              <span className="original-price">Rs.{product.originalPrice.toFixed(2)}</span>
                             </div>
                           </div>
                         </div>
