@@ -71,3 +71,33 @@ app.use("/api/recommendations", recommendationRoutes);
 
 const userRoutes = require("./routes/userRoutes");
 app.use("/api/shop", userRoutes);
+
+const createRFIDRoutes = require("./routes/rfidRoutes");
+app.use("/api/rfid", createRFIDRoutes(io));
+
+// ============================================================================
+// OPTIONAL: RFID Hardware Integration
+// ============================================================================
+// Uncomment the lines below to enable direct Impinj R420 RFID reader integration.
+// This will start the RFID service that connects to the hardware reader via LLRP.
+//
+// Prerequisites:
+// 1. Set RFID_ENABLED=true in your .env file
+// 2. Configure RFID_READER_HOST with your R420 reader's IP address
+// 3. Configure RFID_CART_ID with the cart ID to associate with this reader
+// 4. Ensure the R420 reader is powered on and accessible on the network
+// 5. Ensure ROSpecs are configured on the reader via the Impinj web interface
+//
+// Example .env configuration:
+//   RFID_ENABLED=true
+//   RFID_READER_HOST=192.168.0.143
+//   RFID_CART_ID=1234
+//
+// Once enabled, the RFID service will:
+// - Connect to the R420 reader via LLRP protocol
+// - Automatically add items to the cart when RFID tags are detected
+// - Emit real-time updates to the /rfid-monitor page
+//
+// To enable, uncomment these two lines:
+// const { initializeRFID } = require("./initRFID");
+// initializeRFID(io);
