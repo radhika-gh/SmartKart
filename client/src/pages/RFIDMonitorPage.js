@@ -17,6 +17,14 @@ const RFIDMonitorPage = () => {
   const [testEpc, setTestEpc] = useState("");
   const [testMessage, setTestMessage] = useState({ type: "", text: "" });
   
+  // State management for weight data
+  const [weightData, setWeightData] = useState({
+    measuredWeight: null,
+    expectedWeight: null,
+    discrepancy: false,
+    timestamp: null
+  });
+  
   const socketRef = useRef(null);
   const tagListRef = useRef(null);
 
@@ -63,10 +71,24 @@ const RFIDMonitorPage = () => {
       setCart(data.cart);
     });
 
+    // Listen for weightUpdate events
+    socketRef.current.on("weightUpdate", (data) => {
+      console.log("Weight Update received:", data);
+      
+      // Update weight data state
+      setWeightData({
+        measuredWeight: data.measuredWeight,
+        expectedWeight: data.expectedWeight,
+        discrepancy: data.discrepancy,
+        timestamp: data.timestamp
+      });
+    });
+
     // Cleanup on unmount
     return () => {
       if (socketRef.current) {
         socketRef.current.off("rfidUpdate");
+        socketRef.current.off("weightUpdate");
         socketRef.current.disconnect();
       }
     };
@@ -145,6 +167,66 @@ const RFIDMonitorPage = () => {
               <span className="status-value">{connectionStatus.cartId}</span>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Weight Discrepancy Alert Banner */}
+      {weightData.discrepancy && (
+        <div className="weight-alert-banner">
+          <div className="alert-content">
+            <span className="alert-icon">⚠️</span>
+            <div className="alert-text">
+              <strong>Weight Discrepancy Detected!</strong>
+              <p>The measured weight does not match the expected weight from scanned items.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Weight Status Display */}
+      <div className="weight-section">
+        <div className="weight-card">
+          <div className="weight-header">
+            <h2>Weight Status</h2>
+            <div className={`weight-indicator ${weightData.discrepancy ? 'discrepancy' : 'normal'}`}>
+              <span className="weight-indicator-dot"></span>
+              <span className="weight-indicator-text">
+                {weightData.discrepancy ? 'Discrepancy' : 'Normal'}
+              </span>
+            </div>
+          </div>
+          <div className="weight-comparison">
+            <div className="weight-item">
+              <span className="weight-label">Measured Weight</span>
+              <span className="weight-value measured">
+                {weightData.measuredWeight !== null 
+                  ? `${weightData.measuredWeight.toFixed(2)} kg` 
+                  : 'N/A'}
+              </span>
+            </div>
+            <div className="weight-divider">vs</div>
+            <div className="weight-item">
+              <span className="weight-label">Expected Weight</span>
+              <span className="weight-value expected">
+                {weightData.expectedWeight !== null 
+                  ? `${weightData.expectedWeight.toFixed(2)} kg` 
+                  : 'N/A'}
+              </span>
+            </div>
+          </div>
+          <div className="weight-difference">
+            <span className="difference-label">Weight Difference:</span>
+            <span className={`difference-value ${weightData.discrepancy ? 'alert' : 'normal'}`}>
+              {weightData.measuredWeight !== null && weightData.expectedWeight !== null
+                ? `${Math.abs(weightData.measuredWeight - weightData.expectedWeight).toFixed(3)} kg (${(Math.abs(weightData.measuredWeight - weightData.expectedWeight) * 1000).toFixed(0)} g)`
+                : 'N/A'}
+            </span>
+          </div>
+          {weightData.timestamp && (
+            <div className="weight-timestamp">
+              Last updated: {formatTimestamp(weightData.timestamp)}
+            </div>
+          )}
         </div>
       </div>
 

@@ -53,6 +53,55 @@ io.on("connection", (socket) => {
       console.error("Error updating cart:", err.response ? err.response.data : err.message);
     }
   });
+
+  socket.on("weight_update", async (data) => {
+    try {
+      const { cartId, measuredWeight, timestamp } = data;
+      
+      // Query Cart by cartId with error handling
+      const Cart = require("./models/Cart");
+      const cart = await Cart.findOne({ cartId });
+      
+      if (!cart) {
+        console.warn(`[Weight] Cart ${cartId} not found`);
+        return;
+      }
+      
+      // Update cart.measuredWeight with received value
+      cart.measuredWeight = measuredWeight;
+      
+      // Calculate weight difference between measuredWeight and totalWeight
+      const expectedWeight = cart.totalWeight || 0;
+      const weightDiff = Math.abs(measuredWeight - expectedWeight);
+      
+      // Set cart.weightDiscrepancy to true if difference exceeds 0.5kg
+      cart.weightDiscrepancy = weightDiff > 0.5;
+      
+      // Update cart.lastWeightUpdate with current timestamp
+      cart.lastWeightUpdate = new Date();
+      
+      // Save cart to database
+      await cart.save();
+      
+      // Emit weightUpdate event to frontend with all weight data
+      io.emit("weightUpdate", {
+        cartId,
+        measuredWeight,
+        expectedWeight,
+        discrepancy: cart.weightDiscrepancy,
+        timestamp: timestamp || new Date().toISOString()
+      });
+      
+      // Add logging for weight updates and discrepancies
+      if (cart.weightDiscrepancy) {
+        console.log(`[Weight] ⚠️  DISCREPANCY DETECTED - Cart ${cartId}: measured=${measuredWeight}kg, expected=${expectedWeight}kg, diff=${weightDiff.toFixed(2)}kg`);
+      } else {
+        console.log(`[Weight] Cart ${cartId}: measured=${measuredWeight}kg, expected=${expectedWeight}kg`);
+      }
+    } catch (err) {
+      console.error("[Weight] Error processing weight update:", err.message);
+    }
+  });
 });
 
 
