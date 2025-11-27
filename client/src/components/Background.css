@@ -22,3 +22,18 @@
   0% { transform: translateY(0px); }
   100% { transform: translateY(-200px); }
 }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .image1, .image2, .image3 {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .image1, .image2, .image3 {
+    width: 60px;
+    height: 60px;
+  }
+}

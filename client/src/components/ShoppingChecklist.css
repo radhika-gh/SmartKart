@@ -211,3 +211,127 @@
 .delete-btn:hover {
   color: #e74c3c;
 }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .checklist-diary {
+    width: 95%;
+    height: 90vh;
+  }
+
+  .checklist-header {
+    padding: 20px 25px;
+  }
+
+  .checklist-header h2 {
+    font-size: 2rem;
+  }
+
+  .close-btn {
+    font-size: 2rem;
+    top: 10px;
+    right: 10px;
+  }
+
+  .checklist-body {
+    padding: 15px 25px;
+  }
+
+  .add-item-input {
+    font-size: 1rem;
+    padding: 12px 0;
+  }
+
+  .add-item-btn {
+    width: 45px;
+    height: 45px;
+    font-size: 1.8rem;
+  }
+
+  .checklist-item {
+    padding: 15px 0;
+  }
+
+  .checkbox {
+    width: 24px;
+    height: 24px;
+    margin-right: 15px;
+  }
+
+  .checkmark {
+    font-size: 1rem;
+  }
+
+  .item-name {
+    font-size: 1rem;
+  }
+
+  .delete-btn {
+    font-size: 1.5rem;
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+@media (max-width: 480px) {
+  .checklist-diary {
+    width: 98%;
+    height: 95vh;
+    border-radius: 10px;
+  }
+
+  .checklist-header {
+    padding: 15px 20px;
+  }
+
+  .checklist-header h2 {
+    font-size: 1.6rem;
+  }
+
+  .close-btn {
+    font-size: 1.8rem;
+  }
+
+  .checklist-body {
+    padding: 12px 20px;
+  }
+
+  .add-item-container {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+  }
+
+  .add-item-input {
+    font-size: 0.95rem;
+    padding: 10px 0;
+  }
+
+  .add-item-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.6rem;
+    margin-left: 10px;
+  }
+
+  .checklist-item {
+    padding: 12px 0;
+  }
+
+  .checkbox {
+    width: 22px;
+    height: 22px;
+    margin-right: 12px;
+  }
+
+  .checkmark {
+    font-size: 0.9rem;
+  }
+
+  .item-name {
+    font-size: 0.95rem;
+  }
+
+  .delete-btn {
+    font-size: 1.4rem;
+  }
+}
