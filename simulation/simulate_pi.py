@@ -1,6 +1,6 @@
 import socketio
 import time
-from weight_sensor import get_weight
+
 # Backend URL (Replace with actual IP if needed)
 BACKEND_URL = "http://localhost:8001"
 
@@ -12,12 +12,24 @@ def connect():
     print("Connected to backend as Fake Raspberry Pi")
 
 def send_data():
-    cart_id = "swayam12345"  # Simulating a fixed cart
-    product_id= "EGG987" # List of products to scan once
-    weight = get_weight()
-    print(f"Sending RFID Scan: {product_id}")
-    sio.emit("rfid_scan", {"cartId": cart_id, "productId": product_id, "weight":weight})
-    time.sleep(3)  # Wait for 3 seconds before sending the next product
+    cart_id = input("Enter Cart ID (or press Enter for default 'swayam12345'): ").strip()
+    if not cart_id:
+        cart_id = "swayam12345"
+    
+    product_id = input("Enter Product ID (or press Enter for default 'EGG987'): ").strip()
+    if not product_id:
+        product_id = "EGG987"
+    
+    weight_input = input("Enter weight in grams: ").strip()
+    try:
+        weight = float(weight_input)
+    except ValueError:
+        print("Invalid weight. Using default 0.0")
+        weight = 0.0
+    
+    print(f"Sending RFID Scan: {product_id} with weight: {weight}g")
+    sio.emit("rfid_scan", {"cartId": cart_id, "productId": product_id, "weight": weight})
+    time.sleep(1)
 
 sio.connect(BACKEND_URL)
 

@@ -375,8 +375,8 @@ body, html {
   display: none;
 }
 
-.next-btn {
-  right: 5%;
+.carousel-btn.next-btn {
+  right: -1%;
 }
 
 /* Products Grid */
@@ -552,7 +552,8 @@ body, html {
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-top: 16px;
+  margin-top: 48px;
+  margin-bottom: 16px;
   flex-shrink: 0;
 }
 
