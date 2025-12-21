@@ -1,0 +1,25 @@
+[Unit]
+Description=SmartKart Weight Sensor Service with LCD
+After=network.target
+
+[Service]
+Type=simple
+User=smartkart
+Group=i2c
+WorkingDirectory=/home/smartkart/smartkart-wt
+ExecStart=/usr/bin/python3 /home/smartkart/smartkart-wt/weight_sensor_service.py
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+# I2C device access
+SupplementaryGroups=i2c gpio
+
+# Environment variables
+Environment="BACKEND_URL=http://172.16.71.172:8001"
+Environment="CART_ID=1234"
+Environment="WEIGHT_UPDATE_INTERVAL=1.0"
+
+[Install]
+WantedBy=multi-user.target

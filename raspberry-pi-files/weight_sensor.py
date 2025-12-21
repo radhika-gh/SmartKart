@@ -16,7 +16,8 @@ SCK_PIN = 6
 
 # Calibration values (run calibrate_sensor.py to get these)
 ZERO_OFFSET = -121613.47
-SCALE_FACTOR = 131979.86
+SCALE_FACTOR = 131979.86 / 9320  # Adjusted: was reading 2016kg instead of 0.216kg
+# SCALE_FACTOR ≈ 14.16
 
 # Global HX711 instance
 hx = None

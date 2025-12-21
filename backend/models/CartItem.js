@@ -9,6 +9,13 @@ const CartItemSchema = new mongoose.Schema({
   image: { type: String },
   // Optional list of descriptive tags for recommendation engine
   tags: { type: [String], default: [] },
+  // RFID tag for automatic product detection (10-character string from RDM6300)
+  rfidTag: { 
+    type: String, 
+    unique: true,      // Each tag maps to one product
+    sparse: true,      // Allow products without tags (null values won't violate unique constraint)
+    index: true        // Fast lookup by tag
+  },
   addedAt: { type: Date, default: Date.now },
 });
 

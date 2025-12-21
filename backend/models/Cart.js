@@ -10,7 +10,8 @@ const CartSchema = new mongoose.Schema({
       weight: { type: Number, required: true },
       expiryDate: { type: Date },
       quantity: { type: Number, default: 1 },
-      image :{type:String, required: false},
+      image: { type: String, required: false },
+      addedAt: { type: Date, default: Date.now }, // Track when item was added
     },
   ],
   totalPrice: { type: Number, default: 0 },
