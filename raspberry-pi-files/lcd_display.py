@@ -140,6 +140,30 @@ class LCDDisplay:
         except Exception as e:
             print(f"[LCD] Error displaying weight: {e}")
     
+    def display_price(self, price, status="Ready"):
+        """
+        Display cart price on LCD
+        Line 1: Cart Price
+        Line 2: Price value and status
+        """
+        if not self.initialized:
+            print(f"[LCD Simulation] Price: ₹{price:.2f} | Status: {status}")
+            return
+        
+        try:
+            line1 = "Cart Price"
+            # Format price with rupee symbol (Rs prefix for LCD compatibility)
+            line2 = f"Rs {price:.2f} {status}"
+            
+            if REAL_HARDWARE:
+                self._lcd_string(line1, LCD_LINE_1)
+                self._lcd_string(line2, LCD_LINE_2)
+            else:
+                print(f"[LCD] {line1}")
+                print(f"[LCD] {line2}")
+        except Exception as e:
+            print(f"[LCD] Error displaying price: {e}")
+    
     def clear(self):
         """Clear LCD display"""
         if not self.initialized:
@@ -195,6 +219,11 @@ def display_weight(weight, status="Ready"):
     """Convenience function to display weight"""
     lcd = get_lcd()
     lcd.display_weight(weight, status)
+
+def display_price(price, status="Ready"):
+    """Convenience function to display price"""
+    lcd = get_lcd()
+    lcd.display_price(price, status)
 
 def display_message(line1, line2=""):
     """Convenience function to display custom message"""

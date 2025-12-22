@@ -84,6 +84,21 @@ const RFIDMonitorPage = () => {
       });
     });
 
+    // Listen for weightMismatch events (when add fails due to weight)
+    socketRef.current.on("weightMismatch", (data) => {
+      console.log("Weight Mismatch detected:", data);
+      
+      setTestMessage({
+        type: "error",
+        text: `⚠️ Weight Mismatch! Cannot ${data.action} ${data.productName}. Expected: ${data.expectedWeight.toFixed(2)}kg, Measured: ${data.measuredWeight.toFixed(2)}kg`
+      });
+      
+      // Clear message after 5 seconds
+      setTimeout(() => {
+        setTestMessage({ type: "", text: "" });
+      }, 5000);
+    });
+
     // Cleanup on unmount
     return () => {
       if (socketRef.current) {

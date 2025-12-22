@@ -5,12 +5,15 @@ import time
 import socketio
 from datetime import datetime, timezone
 from weight_sensor import get_weight, initialize_hx711, REAL_HARDWARE
-from lcd_display import get_lcd, display_weight, cleanup as lcd_cleanup
+from lcd_display import get_lcd, display_price, cleanup as lcd_cleanup
 
 # Configuration from environment variables
 BACKEND_URL = os.getenv('BACKEND_URL', 'http://172.16.37.181:8001')
 CART_ID = os.getenv('CART_ID', '1234')
 WEIGHT_UPDATE_INTERVAL = float(os.getenv('WEIGHT_UPDATE_INTERVAL', '1.0'))
+
+# Global variable to track current cart price
+current_cart_price = 0.0
 
 # Socket.IO client
 sio = socketio.Client()
@@ -26,6 +29,10 @@ def connect():
     # Display connection status on LCD
     lcd = get_lcd()
     lcd.display_message("SmartKart", "Connected")
+    time.sleep(1)
+    
+    # Display initial price
+    display_price(current_cart_price, "OK")
 
 @sio.event
 def disconnect():
@@ -40,6 +47,28 @@ def disconnect():
 def connect_error(data):
     """Called when connection error occurs"""
     print(f"[Weight Service] Connection error: {data}")
+
+@sio.on('updateCart')
+def on_cart_update(data):
+    """Called when cart is updated (item added/removed)"""
+    global current_cart_price
+    
+    try:
+        # Check if this update is for our cart
+        if data.get('cartId') == CART_ID:
+            new_price = data.get('totalPrice', 0)
+            current_cart_price = new_price
+            
+            action = data.get('action', '')
+            product = data.get('affectedProduct', '')
+            
+            print(f"[Weight Service] Cart updated: ₹{new_price:.2f} ({action} {product})")
+            
+            # Update LCD with new price
+            status = "OK" if sio.connected else "Offline"
+            display_price(current_cart_price, status)
+    except Exception as e:
+        print(f"[Weight Service] Error processing cart update: {e}")
 
 def send_weight_update(cart_id, measured_weight):
     """Send weight update to backend via Socket.IO"""
@@ -58,20 +87,20 @@ def send_weight_update(cart_id, measured_weight):
 def main_loop():
     """Main loop that reads weight and sends updates"""
     print("[Weight Service] Starting main loop...")
+    print("[Weight Service] LCD will display cart price (updated on item add/remove)")
+    
     while True:
         try:
             # Read current weight
             weight = get_weight()
             
-            # Display weight on LCD
-            status = "OK" if sio.connected else "Offline"
-            display_weight(weight, status)
-            
-            # Send update if connected
+            # Send weight update to backend if connected
             if sio.connected:
                 send_weight_update(CART_ID, weight)
             else:
                 print("[Weight Service] Not connected to backend, skipping update")
+                # Update LCD to show offline status
+                display_price(current_cart_price, "Offline")
             
             # Wait before next reading
             time.sleep(WEIGHT_UPDATE_INTERVAL)
@@ -85,6 +114,8 @@ def main_loop():
 
 def main():
     """Main entry point"""
+    global current_cart_price
+    
     print("=" * 60)
     print("SmartKart Weight Sensor Service")
     print("=" * 60)
@@ -120,7 +151,8 @@ def main():
         print("[Weight Service] Continuing in offline mode...")
         lcd.display_message("SmartKart", "Offline Mode")
         time.sleep(2)
-        # Don't return - continue running in offline mode
+        # Display initial price (0.00) even in offline mode
+        display_price(current_cart_price, "Offline")
     
     # Run main loop (works with or without backend connection)
     try:

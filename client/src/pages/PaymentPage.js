@@ -74,12 +74,21 @@ const PaymentPage = () => {
         alert("Razorpay SDK failed to load. Check your network connection.");
         return;
       }
+      
+      const razorpayKey = process.env.REACT_APP_RAZORPAY_ID_KEY;
+      console.log("🔑 Razorpay Key:", razorpayKey); // Debug log
+      
+      if (!razorpayKey) {
+        alert("❌ Razorpay key not configured. Please restart the app.");
+        return;
+      }
+      
       const { data } = await axios.post(
         `${BACKEND_URL}/api/transactions/create-order`,
         { cartId }
       );
       const options = {
-        key: process.env.REACT_APP_RAZORPAY_ID_KEY,
+        key: razorpayKey,
         amount: data.amount,
         currency: data.currency,
         name: "SmartKart",

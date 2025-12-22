@@ -42,7 +42,7 @@ function setupSocketHandlers() {
   // Backend-side cooldown cache to prevent rapid toggle behavior
   // Maps "cartId:tagId" to last action timestamp
   const rfidCooldownCache = new Map();
-  const COOLDOWN_MS = 5000; // 5 seconds cooldown on backend
+  const COOLDOWN_MS = 1000; // 1 second cooldown on backend
   
   io.on("connection", (socket) => {
   console.log("Microcontroller Connected:", socket.id);
@@ -104,32 +104,75 @@ function setupSocketHandlers() {
         return;
       }
       
-      // Subtask 3.3: Toggle logic for add/remove
+      // Subtask 3.3: Toggle logic for add/remove with weight validation
       const existingItemIndex = cart.items.findIndex(item => 
         item.productId === product.productId
       );
+      
+      // Get current measured weight from cart (updated by weight_update handler)
+      const currentMeasuredWeight = cart.measuredWeight || 0;
+      const expectedCartWeight = cart.totalWeight || 0;
+      const WEIGHT_TOLERANCE = 0.3; // 300g tolerance
+      
+      console.log(`[RFID] 🔍 Weight Check - Current Measured: ${currentMeasuredWeight.toFixed(2)}kg, Expected Cart: ${expectedCartWeight.toFixed(2)}kg, Product: ${product.weight}kg`);
       
       let action;
       
       if (existingItemIndex !== -1) {
         // ===== REMOVE LOGIC =====
-        cart.items.splice(existingItemIndex, 1);
-        action = 'remove';
-        console.log(`[RFID] 🗑️  REMOVED ${product.name} from cart ${cartId}`);
+        // Expected: weight should decrease by product.weight
+        const expectedWeightAfterRemoval = expectedCartWeight - product.weight;
+        const weightDiff = Math.abs(currentMeasuredWeight - expectedWeightAfterRemoval);
+        
+        if (weightDiff <= WEIGHT_TOLERANCE) {
+          // Weight decreased as expected - remove item
+          cart.items.splice(existingItemIndex, 1);
+          action = 'remove';
+          console.log(`[RFID] 🗑️  REMOVED ${product.name} from cart ${cartId} (weight validated: ${currentMeasuredWeight.toFixed(2)}kg)`);
+        } else {
+          // Weight didn't decrease - silently ignore (item not physically removed)
+          console.log(`[RFID] 🔇 IGNORED removal of ${product.name} - weight unchanged (measured: ${currentMeasuredWeight.toFixed(2)}kg, expected after removal: ${expectedWeightAfterRemoval.toFixed(2)}kg)`);
+          return; // Exit without updating cart or emitting events
+        }
       } else {
         // ===== ADD LOGIC =====
-        cart.items.push({
-          productId: product.productId,
-          name: product.name,
-          price: product.price,
-          weight: product.weight,
-          expiryDate: product.expiryDate,
-          quantity: 1,
-          image: product.image || "https://via.placeholder.com/150",
-          addedAt: new Date()
-        });
-        action = 'add';
-        console.log(`[RFID] ✅ ADDED ${product.name} to cart ${cartId}`);
+        // Expected: weight should increase by product.weight
+        const expectedWeightAfterAdd = expectedCartWeight + product.weight;
+        const weightDiff = Math.abs(currentMeasuredWeight - expectedWeightAfterAdd);
+        
+        if (weightDiff <= WEIGHT_TOLERANCE) {
+          // Weight increased as expected - add item
+          cart.items.push({
+            productId: product.productId,
+            name: product.name,
+            price: product.price,
+            weight: product.weight,
+            expiryDate: product.expiryDate,
+            quantity: 1,
+            image: product.image || "https://via.placeholder.com/150",
+            addedAt: new Date()
+          });
+          action = 'add';
+          console.log(`[RFID] ✅ ADDED ${product.name} to cart ${cartId} (weight validated: ${currentMeasuredWeight.toFixed(2)}kg)`);
+        } else {
+          // Weight didn't increase - emit weight mismatch error
+          console.log(`[RFID] ⚠️  WEIGHT MISMATCH - Cannot add ${product.name} (measured: ${currentMeasuredWeight.toFixed(2)}kg, expected: ${expectedWeightAfterAdd.toFixed(2)}kg, diff: ${weightDiff.toFixed(2)}kg)`);
+          
+          io.emit("weightMismatch", {
+            cartId: cartId,
+            productName: product.name,
+            action: 'add',
+            measuredWeight: currentMeasuredWeight,
+            expectedWeight: expectedWeightAfterAdd,
+            difference: weightDiff,
+            timestamp: timestamp || new Date().toISOString()
+          });
+          
+          socket.emit("error", { 
+            message: `Weight mismatch! Cannot add ${product.name}. Expected weight: ${expectedWeightAfterAdd.toFixed(2)}kg, Measured: ${currentMeasuredWeight.toFixed(2)}kg` 
+          });
+          return; // Exit without updating cart
+        }
       }
       
       // Subtask 3.4: Update cart totals
@@ -177,8 +220,8 @@ function setupSocketHandlers() {
       const expectedWeight = cart.totalWeight || 0;
       const weightDiff = Math.abs(measuredWeight - expectedWeight);
       
-      // Set cart.weightDiscrepancy to true if difference exceeds 0.5kg
-      cart.weightDiscrepancy = weightDiff > 0.5;
+      // Set cart.weightDiscrepancy to true if difference exceeds 0.3kg
+      cart.weightDiscrepancy = weightDiff > 0.3;
       
       // Update cart.lastWeightUpdate with current timestamp
       cart.lastWeightUpdate = new Date();

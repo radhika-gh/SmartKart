@@ -14,11 +14,11 @@ def connect():
 def send_data():
     cart_id = input("Enter Cart ID (or press Enter for default 'swayam12345'): ").strip()
     if not cart_id:
-        cart_id = "swayam12345"
+        cart_id = "1234"
     
     product_id = input("Enter Product ID (or press Enter for default 'EGG987'): ").strip()
     if not product_id:
-        product_id = "EGG987"
+        product_id = "Log"
     
     weight_input = input("Enter weight in grams: ").strip()
     try:

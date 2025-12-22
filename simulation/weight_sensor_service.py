@@ -7,6 +7,8 @@ connected to a Raspberry Pi and sends the data to the backend via Socket.IO.
 
 The service automatically detects if it's running on real hardware or in
 simulation mode and adjusts behavior accordingly.
+
+LCD Display: Shows cart price (updated when items are added/removed)
 """
 
 import os
@@ -20,6 +22,9 @@ BACKEND_URL = os.getenv('BACKEND_URL', 'http://localhost:8001')
 CART_ID = os.getenv('CART_ID', '1234')
 WEIGHT_UPDATE_INTERVAL = float(os.getenv('WEIGHT_UPDATE_INTERVAL', '1.0'))  # seconds
 
+# Global variable to track current cart price
+current_cart_price = 0.0
+
 # Create Socket.IO client
 sio = socketio.Client()
 
@@ -31,6 +36,7 @@ def connect():
     print(f"[Weight Service] Monitoring cart: {CART_ID}")
     print(f"[Weight Service] Update interval: {WEIGHT_UPDATE_INTERVAL}s")
     print(f"[Weight Service] Hardware mode: {'REAL' if REAL_HARDWARE else 'SIMULATION'}")
+    print(f"[Weight Service] LCD Display: Cart Price (₹{current_cart_price:.2f})")
 
 @sio.event
 def disconnect():
@@ -41,6 +47,25 @@ def disconnect():
 def connect_error(data):
     """Called when connection attempt fails"""
     print(f"[Weight Service] Connection error: {data}")
+
+@sio.on('updateCart')
+def on_cart_update(data):
+    """Called when cart is updated (item added/removed)"""
+    global current_cart_price
+    
+    try:
+        # Check if this update is for our cart
+        if data.get('cartId') == CART_ID:
+            new_price = data.get('totalPrice', 0)
+            current_cart_price = new_price
+            
+            action = data.get('action', '')
+            product = data.get('affectedProduct', '')
+            
+            print(f"[Weight Service] Cart updated: ₹{new_price:.2f} ({action} {product})")
+            print(f"[LCD Display] Cart Price: ₹{new_price:.2f}")
+    except Exception as e:
+        print(f"[Weight Service] Error processing cart update: {e}")
 
 def send_weight_update(cart_id, measured_weight):
     """
@@ -70,6 +95,7 @@ def main_loop():
     Main service loop that continuously reads weight and sends updates
     """
     print("[Weight Service] Starting main loop...")
+    print("[Weight Service] LCD will display cart price (updated on item add/remove)")
     
     while True:
         try:
@@ -96,6 +122,8 @@ def main():
     """
     Main entry point for the weight sensor service
     """
+    global current_cart_price
+    
     print("=" * 60)
     print("SmartKart Weight Sensor Service")
     print("=" * 60)
@@ -115,6 +143,7 @@ def main():
     try:
         print(f"[Weight Service] Connecting to backend at {BACKEND_URL}...")
         sio.connect(BACKEND_URL)
+        print(f"[LCD Display] Cart Price: ₹{current_cart_price:.2f}")
     except Exception as e:
         print(f"[Weight Service] Failed to connect to backend: {e}")
         print("[Weight Service] Exiting...")

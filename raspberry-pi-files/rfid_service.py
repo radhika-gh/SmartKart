@@ -16,7 +16,7 @@ BAUD_RATE = 9600
 SERIAL_TIMEOUT = 0.1  # 100ms timeout for non-blocking reads
 
 # RFID reader settings
-COOLDOWN_SECONDS = 3
+COOLDOWN_SECONDS = 1
 PACKET_SIZE = 14  # RDM6300 sends 14 bytes per read
 
 # Socket.IO client with automatic reconnection

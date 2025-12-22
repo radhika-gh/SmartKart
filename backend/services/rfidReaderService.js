@@ -4,7 +4,7 @@ const CartItem = require("../models/CartItem");
 
 // Tag debounce mechanism - tracks EPC timestamps to prevent duplicate additions
 const recentTags = new Map();
-const TAG_COOLDOWN_MS = 3000;
+const TAG_COOLDOWN_MS = 1000;
 
 /**
  * Check if a tag should be processed based on debounce logic
