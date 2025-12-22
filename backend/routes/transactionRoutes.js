@@ -8,10 +8,9 @@ require("dotenv").config();
 const { createOrder } = require("../controllers/payment.js");
 // ✅ Initialize Razorpay
 const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_ID_KEY,
-  key_secret: process.env.RAZORPAY_SECRET_KEY,
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
-
 
 
 router.post("/create-order", async (req, res) => {
@@ -44,7 +43,7 @@ router.post("/create-order", async (req, res) => {
 
     res.status(200).json({
       success: true,
-      orderId: order.id,
+      order_id: order.id,
       amount: order.amount,
       currency: order.currency,
       cartId,
@@ -67,9 +66,10 @@ router.post("/verify-payment", async (req, res) => {
     if (paymentMethod === "Razorpay") {
       // ✅ Razorpay Payment Verification
       const generatedSignature = crypto
-        .createHmac("sha256", process.env.RAZORPAY_SECRET_KEY)
-        .update(razorpay_order_id + "|" + razorpay_payment_id)
-        .digest("hex");
+  .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+  .update(razorpay_order_id + "|" + razorpay_payment_id)
+  .digest("hex");
+
 
       if (generatedSignature !== razorpay_signature) {
         return res.status(400).json({ error: "Invalid payment signature" });

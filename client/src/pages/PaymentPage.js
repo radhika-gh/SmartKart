@@ -68,63 +68,66 @@ const PaymentPage = () => {
       return;
     }
 
-    // Razorpay Payment Flow:
-    try {
-      if (!window.Razorpay) {
-        alert("Razorpay SDK failed to load. Check your network connection.");
-        return;
+ // Razorpay Payment Flow:
+try {
+  if (!window.Razorpay) {
+    alert("Razorpay SDK failed to load. Check your network connection.");
+    return;
+  }
+
+  const { data } = await axios.post(
+    `${BACKEND_URL}/api/transactions/create-order`,
+    { cartId }
+  );
+
+  const options = {
+    key: process.env.REACT_APP_RAZORPAY_KEY_ID,
+    amount: data.amount,
+    currency: data.currency,
+    name: "SmartKart",
+    description: "Complete Your Payment",
+
+    // 🔴 we’ll fix this next
+    order_id: data.order_id,
+
+    handler: async function (response) {
+      try {
+        await axios.post(`${BACKEND_URL}/api/transactions/verify-payment`, {
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_signature: response.razorpay_signature,
+          cartId,
+          paymentMethod: "Razorpay",
+        });
+        alert("✅ Payment Successful!");
+        navigate("/");
+      } catch (error) {
+        console.error("Verification failed:", error);
+        alert("❌ Payment verification failed. Contact support.");
       }
-      
-      const razorpayKey = process.env.REACT_APP_RAZORPAY_ID_KEY;
-      console.log("🔑 Razorpay Key:", razorpayKey); // Debug log
-      
-      if (!razorpayKey) {
-        alert("❌ Razorpay key not configured. Please restart the app.");
-        return;
-      }
-      
-      const { data } = await axios.post(
-        `${BACKEND_URL}/api/transactions/create-order`,
-        { cartId }
-      );
-      const options = {
-        key: razorpayKey,
-        amount: data.amount,
-        currency: data.currency,
-        name: "SmartKart",
-        description: "Complete Your Payment",
-        order_id: data.orderId,
-        handler: async function (response) {
-          try {
-            await axios.post(`${BACKEND_URL}/api/transactions/verify-payment`, {
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-              cartId,
-              paymentMethod: "Razorpay",
-            });
-            alert("✅ Payment Successful!");
-            navigate("/");
-          } catch (error) {
-            console.error("Verification failed:", error);
-            alert("❌ Payment verification failed. Contact support.");
-          }
-        },
-        prefill: {
-          name: "Radhika Rani",
-          email: "radhika@example.com",
-          contact: "9876543210",
-        },
-        theme: {
-          color: "#28a745",
-        },
-      };
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (error) {
-      console.error("Payment failed:", error);
-      alert("❌ Payment failed. Try again!");
-    }
+    },
+
+    prefill: {
+      name: "Radhika Rani",
+      email: "radhika@example.com",
+      contact: "9876543210",
+    },
+    theme: { color: "#28a745" },
+  };
+
+  const rzp = new window.Razorpay(options);
+
+  rzp.on("payment.failed", function (response) {
+    console.error("Razorpay payment failed:", response.error);
+    alert(response.error.description || "Payment failed");
+  });
+
+  rzp.open();
+
+} catch (error) {
+  console.error("Unexpected payment error:", error);
+}
+
   };
 
   if (loading) return <p>Loading payment details...</p>;
