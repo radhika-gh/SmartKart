@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Item to SmartKart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        input[type="file"] {
+            padding: 5px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .preview {
+            margin-top: 10px;
+            max-width: 200px;
+            border-radius: 5px;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .small-text {
+            font-size: 12px;
+            color: #777;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>📦 Add New Item</h1>
+        
+        <form id="addItemForm">
+            <div class="form-group">
+                <label for="productId">Product ID *</label>
+                <input type="text" id="productId" name="productId" required placeholder="e.g., PROD001">
+            </div>
+
+            <div class="form-group">
+                <label for="name">Product Name *</label>
+                <input type="text" id="name" name="name" required placeholder="e.g., Organic Apples">
+            </div>
+
+            <div class="form-group">
+                <label for="price">Price (₹) *</label>
+                <input type="number" id="price" name="price" required placeholder="e.g., 299" step="0.01">
+            </div>
+
+            <div class="form-group">
+                <label for="weight">Weight (grams)</label>
+                <input type="number" id="weight" name="weight" placeholder="e.g., 500">
+            </div>
+
+            <div class="form-group">
+                <label for="expiryDate">Expiry Date</label>
+                <input type="date" id="expiryDate" name="expiryDate">
+            </div>
+
+            <div class="form-group">
+                <label for="tags">Tags</label>
+                <input type="text" id="tags" name="tags" placeholder="e.g., fruit, organic, fresh">
+                <div class="small-text">Separate multiple tags with commas</div>
+            </div>
+
+            <div class="form-group">
+                <label for="image">Product Image *</label>
+                <input type="file" id="image" name="image" accept="image/*" required>
+                <img id="imagePreview" class="preview" style="display: none;">
+            </div>
+
+            <button type="submit" id="submitBtn">Add Item</button>
+        </form>
+
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api/items/add';
+        
+        // Image preview
+        document.getElementById('image').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('imagePreview');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Form submission
+        document.getElementById('addItemForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const messageDiv = document.getElementById('message');
+            
+            // Disable button and show loading
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Uploading...';
+            messageDiv.style.display = 'none';
+            
+            try {
+                // Create FormData
+                const formData = new FormData();
+                formData.append('productId', document.getElementById('productId').value);
+                formData.append('name', document.getElementById('name').value);
+                formData.append('price', document.getElementById('price').value);
+                
+                const weight = document.getElementById('weight').value;
+                if (weight) formData.append('weight', weight);
+                
+                const expiryDate = document.getElementById('expiryDate').value;
+                if (expiryDate) formData.append('expiryDate', expiryDate);
+                
+                const tags = document.getElementById('tags').value;
+                if (tags) formData.append('tags', tags);
+                
+                const imageFile = document.getElementById('image').files[0];
+                if (imageFile) formData.append('image', imageFile);
+                
+                // Send to backend
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Success
+                    messageDiv.className = 'message success';
+                    messageDiv.textContent = '✅ Item added successfully! Image uploaded to Cloudinary.';
+                    messageDiv.style.display = 'block';
+                    
+                    // Reset form
+                    document.getElementById('addItemForm').reset();
+                    document.getElementById('imagePreview').style.display = 'none';
+                    
+                    console.log('Added item:', data.newItem);
+                } else {
+                    throw new Error(data.error || 'Failed to add item');
+                }
+                
+            } catch (error) {
+                // Error
+                messageDiv.className = 'message error';
+                messageDiv.textContent = '❌ Error: ' + error.message;
+                messageDiv.style.display = 'block';
+                console.error('Error:', error);
+            } finally {
+                // Re-enable button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Add Item';
+            }
+        });
+    </script>
+</body>
+</html>

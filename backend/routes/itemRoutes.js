@@ -79,6 +79,32 @@ router.get("/", async (req, res) => {
   }
 });
 
+// ✅ Add item with existing Cloudinary URL (no file upload)
+router.post("/add-with-url", async (req, res) => {
+  try {
+    const { productId, name, price, weight, expiryDate, tags, imageUrl } = req.body;
+
+    const newItem = new CartItem({
+      productId,
+      name,
+      price,
+      weight,
+      expiryDate,
+      image: imageUrl || "",
+      tags: Array.isArray(tags)
+        ? tags
+        : typeof tags === "string" && tags.length
+        ? tags.split(/[, ]+/).filter(Boolean)
+        : [],
+    });
+
+    await newItem.save();
+    res.status(201).json({ message: "Item added successfully", newItem });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ✅ Remove item by ID
 router.delete("/remove/:id", async (req, res) => {
   try {

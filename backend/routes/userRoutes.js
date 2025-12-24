@@ -77,11 +77,16 @@ router.post("/add", async (req, res) => {
 
     console.log("📸 Image URL from DB:", product.image); // ✅ Log image URL before adding to cart
 
+    // ⚠️ WEIGHT VERIFICATION BYPASSED - Items will be added regardless of weight mismatch
     const expectedWeight = cart.totalWeight + product.weight;
-    if (Math.abs(weight - expectedWeight) > 0.05) {
-      return res.status(400).json({
-        error: `⚠️ Weight mismatch! Expected: ${expectedWeight} kg, Received: ${weight} kg`,
-      });
+    const weightDiff = Math.abs(weight - expectedWeight);
+    if (weightDiff > 0.05) {
+      console.log(`⚠️ Weight mismatch detected but BYPASSED! Expected: ${expectedWeight} kg, Received: ${weight} kg, Diff: ${weightDiff.toFixed(3)} kg`);
+      // return res.status(400).json({
+      //   error: `⚠️ Weight mismatch! Expected: ${expectedWeight} kg, Received: ${weight} kg`,
+      // });
+    } else {
+      console.log(`✅ Weight verification passed: Expected: ${expectedWeight} kg, Received: ${weight} kg`);
     }
 
     const existingItem = cart.items.find(item => item.productId === productId);
@@ -119,11 +124,17 @@ router.delete("/remove", async (req, res) => {
 
     let cart = await Cart.findOne({ cartId });
     const existingItem = cart.items.find((item) => item.productId === productId);
+    
+    // ⚠️ WEIGHT VERIFICATION BYPASSED - Items will be removed regardless of weight mismatch
     const expectedWeight = cart.totalWeight - existingItem.weight;
-    if (Math.abs(weight - expectedWeight) > 0.05) {
-      return res.status(400).json({
-        error: `⚠️ Total weight mismatch! Expected: ${expectedWeight} kg, Received: ${weight} kg`,
-      });
+    const weightDiff = Math.abs(weight - expectedWeight);
+    if (weightDiff > 0.05) {
+      console.log(`⚠️ Weight mismatch detected but BYPASSED! Expected: ${expectedWeight} kg, Received: ${weight} kg, Diff: ${weightDiff.toFixed(3)} kg`);
+      // return res.status(400).json({
+      //   error: `⚠️ Total weight mismatch! Expected: ${expectedWeight} kg, Received: ${weight} kg`,
+      // });
+    } else {
+      console.log(`✅ Weight verification passed: Expected: ${expectedWeight} kg, Received: ${weight} kg`);
     }
     cart.items = cart.items.filter((item) => item.productId !== productId);
     // ✅ Update total price & total weight

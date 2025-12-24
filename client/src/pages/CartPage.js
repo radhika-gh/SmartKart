@@ -14,6 +14,7 @@ const CartPage = () => {
   const [loading, setLoading] = useState(true);
   const [recommended, setRecommended] = useState([]);
   const [isChecklistVisible, setChecklistVisible] = useState(false);
+  const [weightDiscrepancy, setWeightDiscrepancy] = useState(false);
   const navigate = useNavigate();
 
   // ✅ Fetch cart details when the page loads
@@ -51,8 +52,15 @@ const CartPage = () => {
       });
     });
 
+    // ✅ Listen for weight updates
+    socket.on("weightUpdate", (data) => {
+      if (data.cartId !== cartId) return;
+      setWeightDiscrepancy(data.discrepancy);
+    });
+
     return () => {
-      socket.off("updateCart"); // Cleanup listener
+      socket.off("updateCart");
+      socket.off("weightUpdate");
     };
   }, [cartId]);
 
@@ -94,6 +102,10 @@ const CartPage = () => {
 
   // ✅ Handle Checkout (Navigate to Payment Page)
   const handleCheckout = () => {
+    if (weightDiscrepancy) {
+      alert("Weight discrepancy detected. Please verify items in cart before checkout.");
+      return;
+    }
     navigate(`/payment/${cartId}`);
   };
 
@@ -155,13 +167,18 @@ const CartPage = () => {
         </p>
         <button
           onClick={handleCheckout}
-          disabled={cart.items.length === 0}
+          disabled={cart.items.length === 0 || weightDiscrepancy}
           className={`checkout-btn ${
-            cart.items.length === 0 ? "disabled" : ""
+            cart.items.length === 0 || weightDiscrepancy ? "disabled" : ""
           }`}
         >
-          Buy Now - ₹{cart.totalPrice}
+          {weightDiscrepancy ? "⚠️ Weight Mismatch" : `Buy Now - ₹${cart.totalPrice}`}
         </button>
+        {weightDiscrepancy && (
+          <p style={{ color: "red", fontSize: "14px", marginTop: "10px", textAlign: "center" }}>
+            Weight discrepancy detected. Please verify items.
+          </p>
+        )}
 
         {/* 🔮 Recommendations */}
         {recommended.length > 0 && (
